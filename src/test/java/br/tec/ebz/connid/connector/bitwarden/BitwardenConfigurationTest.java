@@ -8,5 +8,7 @@ class BitwardenConfigurationTest {
 
     @Test
     void validate() {
+        BitwardenConfiguration bitwardenConfiguration = new BitwardenConfiguration();
+        bitwardenConfiguration.validate();
     }
 }
