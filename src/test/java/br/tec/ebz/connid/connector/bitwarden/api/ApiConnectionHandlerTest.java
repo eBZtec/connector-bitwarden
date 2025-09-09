@@ -45,10 +45,10 @@ public class ApiConnectionHandlerTest {
     @Test
     void authenticates_via_query_params_and_uses_bearer_header() throws Exception {
         wm.stubFor(post(urlPathEqualTo("/api/v1/authentication/auth/"))
-                .withQueryParam("grant_type", equalTo("client_credentials"))
-                .withQueryParam("scope", equalTo("api.organization"))
-                .withQueryParam("client_id", equalTo("my-client"))
-                .withQueryParam("client_secret", equalTo("s3cr3t"))
+                .withFormParam("grant_type", equalTo("client_credentials"))
+                .withFormParam("scope", equalTo("api.organization"))
+                .withFormParam("client_id", equalTo("my-client"))
+                .withFormParam("client_secret", equalTo("s3cr3t"))
                 .withHeader("Content-Type", containing("application/x-www-form-urlencoded"))
                 .willReturn(okJson("{\"token\":\"abc123\",\"expiresIn\":3600}")));
 
@@ -64,10 +64,10 @@ public class ApiConnectionHandlerTest {
         assertEquals("ok", result);
 
         wm.verify(1, postRequestedFor(urlPathEqualTo("/api/v1/authentication/auth/"))
-                .withQueryParam("grant_type", equalTo("client_credentials"))
-                .withQueryParam("scope", equalTo("api.organization"))
-                .withQueryParam("client_id", equalTo("my-client"))
-                .withQueryParam("client_secret", equalTo("s3cr3t")));
+                .withFormParam("grant_type", equalTo("client_credentials"))
+                .withFormParam("scope", equalTo("api.organization"))
+                .withFormParam("client_id", equalTo("my-client"))
+                .withFormParam("client_secret", equalTo("s3cr3t")));
         wm.verify(1, getRequestedFor(urlEqualTo("/api/v1/echo"))
                 .withHeader("Authorization", equalTo("Bearer abc123")));
     }

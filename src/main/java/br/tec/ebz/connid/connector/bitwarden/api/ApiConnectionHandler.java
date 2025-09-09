@@ -5,6 +5,7 @@ import com.evolveum.polygon.common.GuardedStringAccessor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
+import jakarta.ws.rs.core.Form;
 import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.Response;
 import org.apache.cxf.jaxrs.client.ClientConfiguration;
@@ -18,6 +19,7 @@ import org.identityconnectors.framework.common.exceptions.ConnectionFailedExcept
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -75,17 +77,17 @@ public abstract class ApiConnectionHandler {
         WebClient client = WebClient.create(String.valueOf(resolvedUri), List.of(provider));
         client.accept("application/json");
         client.type("application/x-www-form-urlencoded");
-        client.query("grant_type", "client_credentials");
-        client.query("scope", "api.organization");
-        client.query("client_id", configuration.getClientId());
 
         GuardedStringAccessor accessor = new GuardedStringAccessor();
         this.configuration.getClientSecret().access(accessor);
-        client.query("client_secret", accessor.getClearString());
 
-        Map<String, String> authRequest = new HashMap<>();
+        var form = new Form();
+        form.param("grant_type", "client_credentials");
+        form.param("scope", "api.organization");
+        form.param("client_id", configuration.getClientId());
+        form.param("client_secret", accessor.getClearString());
 
-        Response response = client.post(authRequest);
+        Response response = client.post(form);
 
         if (response.getStatus() < 200 || response.getStatus() >= 300) {
             LOG.error("Could not authenticated, reason: " + response.getStatusInfo().getReasonPhrase());
