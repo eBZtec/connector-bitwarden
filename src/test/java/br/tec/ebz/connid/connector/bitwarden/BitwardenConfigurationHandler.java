@@ -1,6 +1,11 @@
 package br.tec.ebz.connid.connector.bitwarden;
 
 import org.identityconnectors.common.security.GuardedString;
+import org.identityconnectors.framework.api.APIConfiguration;
+import org.identityconnectors.framework.api.ConfigurationProperty;
+import org.identityconnectors.framework.api.ConnectorFacade;
+import org.identityconnectors.framework.api.ConnectorFacadeFactory;
+import org.identityconnectors.test.common.TestHelpers;
 
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
@@ -24,5 +29,25 @@ public abstract class BitwardenConfigurationHandler {
         configuration.setClientSecret(new GuardedString(secret.toCharArray()));
         configuration.setAuthUrl(auth);
         return configuration;
+    }
+
+    public ConnectorFacade getTestConnection() {
+        BitwardenConfiguration configuration = configFromEnv();
+
+        return getTestConnection(configuration);
+    }
+
+    public ConnectorFacade getTestConnection(BitwardenConfiguration configuration) {
+        ConnectorFacadeFactory factory = ConnectorFacadeFactory.getInstance();
+
+        APIConfiguration impl = TestHelpers.createTestConfiguration(BitwardenConnector.class, configuration);
+
+        impl.getResultsHandlerConfiguration().setEnableAttributesToGetSearchResultsHandler(false);
+        impl.getResultsHandlerConfiguration().setEnableCaseInsensitiveFilter(false);
+        impl.getResultsHandlerConfiguration().setEnableFilteredResultsHandler(false);
+        impl.getResultsHandlerConfiguration().setEnableNormalizingResultsHandler(false);
+        impl.getResultsHandlerConfiguration().setFilteredResultsHandlerInValidationMode(false);
+
+        return factory.newInstance(impl);
     }
 }
