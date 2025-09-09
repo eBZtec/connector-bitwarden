@@ -59,4 +59,9 @@ public class MemberProcessing extends ObjectProcessing {
 
         return member;
     }
+
+    public void delete(Uid uid, OperationOptions options) {
+        membersService.delete(uid.getUidValue());
+        LOG.ok("Member \"{0}\" deleted successfully.", uid.getUidValue());
+    }
 }

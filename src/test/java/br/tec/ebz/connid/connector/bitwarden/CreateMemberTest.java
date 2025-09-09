@@ -51,5 +51,7 @@ public class CreateMemberTest extends BitwardenConfigurationHandler{
         Uid uid = facade.create(MemberProcessing.OBJECT_CLASS, attributes, null);
 
         assertNotNull(uid, "Uid cannot be null");
+
+        facade.delete(MemberProcessing.OBJECT_CLASS, uid, null);
     }
 }

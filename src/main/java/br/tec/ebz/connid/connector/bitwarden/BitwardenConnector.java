@@ -27,13 +27,14 @@ import org.identityconnectors.framework.spi.Configuration;
 import org.identityconnectors.framework.spi.Connector;
 import org.identityconnectors.framework.spi.ConnectorClass;
 import org.identityconnectors.framework.spi.operations.CreateOp;
+import org.identityconnectors.framework.spi.operations.DeleteOp;
 import org.identityconnectors.framework.spi.operations.TestOp;
 
 import java.net.MalformedURLException;
 import java.util.Set;
 
 @ConnectorClass(displayNameKey = "bitwarden.connector.display", configurationClass = BitwardenConfiguration.class)
-public class BitwardenConnector implements Connector, TestOp, CreateOp {
+public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp {
 
     private static final Log LOG = Log.getLog(BitwardenConnector.class);
 
@@ -91,5 +92,17 @@ public class BitwardenConnector implements Connector, TestOp, CreateOp {
         }
 
         return uid;
+    }
+
+    @Override
+    public void delete(ObjectClass objectClass, Uid uid, OperationOptions options) {
+        try {
+            if (objectClass.is(MemberProcessing.OBJECT_CLASS_NAME)) {
+                memberProcessing.delete(uid, options);
+            }
+        } catch (Exception e) {
+            LOG.error("Could not delete object, reason: {0}", e.getMessage());
+            throw e;
+        }
     }
 }
