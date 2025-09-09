@@ -26,7 +26,7 @@ import org.identityconnectors.framework.spi.operations.TestOp;
 import java.net.MalformedURLException;
 
 @ConnectorClass(displayNameKey = "bitwarden.connector.display", configurationClass = BitwardenConfiguration.class)
-public class BitwardenConnector implements Connector {
+public class BitwardenConnector implements Connector, TestOp {
 
     private static final Log LOG = Log.getLog(BitwardenConnector.class);
 
@@ -59,5 +59,10 @@ public class BitwardenConnector implements Connector {
         }
 
         LOG.ok("Connector instance disposed successfully.");
+    }
+
+    @Override
+    public void test() {
+
     }
 }
