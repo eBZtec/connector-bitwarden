@@ -4,6 +4,7 @@ import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenMember;
 import br.tec.ebz.connid.connector.bitwarden.schema.MemberSchemaAttributes;
 import br.tec.ebz.connid.connector.bitwarden.services.MembersService;
 import org.identityconnectors.common.logging.Log;
+import org.identityconnectors.framework.common.exceptions.UnknownUidException;
 import org.identityconnectors.framework.common.objects.*;
 
 import java.util.List;
@@ -32,12 +33,31 @@ public class MemberProcessing extends ObjectProcessing {
         return new Uid(memberId);
     }
 
+    public void update(Uid uid, Set<AttributeDelta> attributeDeltas, OperationOptions operationOptions) {
+        ConnectorObject currentObject = getObject(uid.getUidValue());
+        Set<Attribute> updatedAttributes = updateObjectAttributes(uid, attributeDeltas, currentObject);
+        BitwardenMember member = translate(updatedAttributes);
+
+        BitwardenMember updatedMember = membersService.update(uid.getUidValue(), member);
+
+        LOG.ok("Member \"{0}\" updated successfully.", uid.getUidValue());
+    }
+
     public void delete(Uid uid, OperationOptions options) {
         membersService.delete(uid.getUidValue());
         LOG.ok("Member \"{0}\" deleted successfully.", uid.getUidValue());
     }
 
+    private ConnectorObject getObject(String id) {
+        BitwardenMember member = membersService.get(id);
+
+        if (member == null) throw new UnknownUidException("Member id \"" + id + "\" does not exists");
+
+        return translate(member);
+    }
+
     private BitwardenMember translate(Set<Attribute> attributes) {
+        String id = getAttributeValue(Uid.NAME, String.class, attributes);
         String email = getAttributeValue(Name.NAME, String.class, attributes);
         String name = getAttributeValue(MemberSchemaAttributes.NAME, String.class, attributes);
         Boolean twoFactorEnabled = getAttributeValue(MemberSchemaAttributes.TWO_FACTOR_ENABLED, Boolean.class, attributes);
@@ -49,6 +69,9 @@ public class MemberProcessing extends ObjectProcessing {
         List<String> groups = getAttributeValue(MemberSchemaAttributes.GROUPS, List.class, attributes);
 
         BitwardenMember member = new BitwardenMember();
+
+        if (id != null) member.setId(id);
+
         member.setEmail(email);
         member.setName(name);
         member.setTwoFactorEnabled(twoFactorEnabled);
@@ -65,5 +88,21 @@ public class MemberProcessing extends ObjectProcessing {
         return member;
     }
 
+    private ConnectorObject translate(BitwardenMember member) {
+        ConnectorObjectBuilder connectorObject = new ConnectorObjectBuilder();
+        connectorObject.setObjectClass(MemberProcessing.OBJECT_CLASS);
+
+        addAttribute(connectorObject, Uid.NAME, member.getId());
+        addAttribute(connectorObject, Name.NAME, member.getEmail());
+        addAttribute(connectorObject, MemberSchemaAttributes.TWO_FACTOR_ENABLED, member.getTwoFactorEnabled());
+        addAttribute(connectorObject, MemberSchemaAttributes.STATUS, member.getStatus());
+        addAttribute(connectorObject, MemberSchemaAttributes.RESET_PASSWORD_ENROLLED, member.getResetPasswordEnrolled());
+        addAttribute(connectorObject, MemberSchemaAttributes.SSO_EXTERNAL_ID, member.getExternalId());
+        addAttribute(connectorObject, MemberSchemaAttributes.TYPE, member.getType());
+        addAttribute(connectorObject, MemberSchemaAttributes.EXTERNAL_ID, member.getExternalId());
+        addAttribute(connectorObject, MemberSchemaAttributes.GROUPS, member.getGroups());
+
+        return connectorObject.build();
+    }
 
 }

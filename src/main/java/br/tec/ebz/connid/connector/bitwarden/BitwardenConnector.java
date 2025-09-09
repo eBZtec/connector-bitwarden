@@ -19,22 +19,20 @@ package br.tec.ebz.connid.connector.bitwarden;
 import br.tec.ebz.connid.connector.bitwarden.processing.MemberProcessing;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
-import org.identityconnectors.framework.common.objects.Attribute;
-import org.identityconnectors.framework.common.objects.ObjectClass;
-import org.identityconnectors.framework.common.objects.OperationOptions;
-import org.identityconnectors.framework.common.objects.Uid;
+import org.identityconnectors.framework.common.objects.*;
 import org.identityconnectors.framework.spi.Configuration;
 import org.identityconnectors.framework.spi.Connector;
 import org.identityconnectors.framework.spi.ConnectorClass;
 import org.identityconnectors.framework.spi.operations.CreateOp;
 import org.identityconnectors.framework.spi.operations.DeleteOp;
 import org.identityconnectors.framework.spi.operations.TestOp;
+import org.identityconnectors.framework.spi.operations.UpdateDeltaOp;
 
 import java.net.MalformedURLException;
 import java.util.Set;
 
 @ConnectorClass(displayNameKey = "bitwarden.connector.display", configurationClass = BitwardenConfiguration.class)
-public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp {
+public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp, UpdateDeltaOp {
 
     private static final Log LOG = Log.getLog(BitwardenConnector.class);
 
@@ -104,5 +102,18 @@ public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp
             LOG.error("Could not delete object, reason: {0}", e.getMessage());
             throw e;
         }
+    }
+
+    @Override
+    public Set<AttributeDelta> updateDelta(ObjectClass objectClass, Uid uid, Set<AttributeDelta> modifications, OperationOptions options) {
+        try {
+            if (objectClass.is(MemberProcessing.OBJECT_CLASS_NAME)) {
+                memberProcessing.update(uid, modifications, options);
+            }
+        } catch (Exception e) {
+            LOG.error("Could not delete object, reason: {0}", e.getMessage());
+            throw e;
+        }
+        return Set.of();
     }
 }

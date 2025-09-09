@@ -20,4 +20,8 @@ public interface MembersService {
     @GET
     @Path("/{id}")
     BitwardenMember get(@PathParam("id") String id);
+
+    @PUT
+    @Path("/{id}")
+    BitwardenMember update(@PathParam("id") String id, BitwardenMember member);
 }
