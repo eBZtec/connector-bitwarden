@@ -16,19 +16,39 @@
 
 package br.tec.ebz.connid.connector.bitwarden;
 
+import br.tec.ebz.connid.connector.bitwarden.api.ApiConnectionHandler;
+import br.tec.ebz.connid.connector.bitwarden.services.MembersService;
 import org.identityconnectors.common.logging.Log;
 
-public class BitwardenConnection {
+import java.net.MalformedURLException;
+
+public class BitwardenConnection extends ApiConnectionHandler {
 
     private static final Log LOG = Log.getLog(BitwardenConnection.class);
 
+    private static final Class<MembersService> MEMBERS_SERVICE = MembersService.class;
+
+    private MembersService membersService;
+
     private BitwardenConfiguration configuration;
 
-    public BitwardenConnection(BitwardenConfiguration configuration) {
-        this.configuration = configuration;
+    public BitwardenConnection(BitwardenConfiguration configuration) throws MalformedURLException {
+        super(configuration);
+    }
+
+    public void setupServices() throws MalformedURLException {
+        membersService = setupClient(MEMBERS_SERVICE);
+        LOG.ok("API services initialized successfully.");
+    }
+
+    public MembersService getMembersService() {
+        return membersService;
     }
 
     public void dispose() {
-        //todo implement
+        this.configuration = null;
+        membersService = null;
+
+        LOG.ok("Connector disposed successfully.");
     }
 }

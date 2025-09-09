@@ -17,9 +17,12 @@
 package br.tec.ebz.connid.connector.bitwarden;
 
 import org.identityconnectors.common.logging.Log;
+import org.identityconnectors.framework.common.exceptions.ConnectorException;
 import org.identityconnectors.framework.spi.Configuration;
 import org.identityconnectors.framework.spi.Connector;
 import org.identityconnectors.framework.spi.ConnectorClass;
+
+import java.net.MalformedURLException;
 
 @ConnectorClass(displayNameKey = "bitwarden.connector.display", configurationClass = BitwardenConfiguration.class)
 public class BitwardenConnector implements Connector {
@@ -37,7 +40,13 @@ public class BitwardenConnector implements Connector {
     @Override
     public void init(Configuration configuration) {
         this.configuration = (BitwardenConfiguration)configuration;
-        this.connection = new BitwardenConnection(this.configuration);
+        try {
+            this.connection = new BitwardenConnection(this.configuration);
+
+            LOG.ok("Connector instance initialized successfully.");
+        } catch (MalformedURLException e) {
+            throw new ConnectorException(e);
+        }
     }
 
     @Override
@@ -47,5 +56,7 @@ public class BitwardenConnector implements Connector {
             connection.dispose();
             connection = null;
         }
+
+        LOG.ok("Connector instance disposed successfully.");
     }
 }
