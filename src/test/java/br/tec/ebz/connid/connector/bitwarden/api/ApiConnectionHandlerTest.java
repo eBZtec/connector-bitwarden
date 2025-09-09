@@ -44,7 +44,7 @@ public class ApiConnectionHandlerTest {
 
     @Test
     void authenticates_via_query_params_and_uses_bearer_header() throws Exception {
-        wm.stubFor(post(urlPathEqualTo("/api/v1/authentication/auth/"))
+        wm.stubFor(post(urlPathEqualTo("/connect/token"))
                 .withFormParam("grant_type", equalTo("client_credentials"))
                 .withFormParam("scope", equalTo("api.organization"))
                 .withFormParam("client_id", equalTo("my-client"))
@@ -63,7 +63,7 @@ public class ApiConnectionHandlerTest {
         String result = client.echo();
         assertEquals("ok", result);
 
-        wm.verify(1, postRequestedFor(urlPathEqualTo("/api/v1/authentication/auth/"))
+        wm.verify(1, postRequestedFor(urlPathEqualTo("/connect/token"))
                 .withFormParam("grant_type", equalTo("client_credentials"))
                 .withFormParam("scope", equalTo("api.organization"))
                 .withFormParam("client_id", equalTo("my-client"))
@@ -74,7 +74,7 @@ public class ApiConnectionHandlerTest {
 
     @Test
     void throws_on_http_failure_status() {
-        wm.stubFor(post(urlPathEqualTo("/api/v1/authentication/auth/"))
+        wm.stubFor(post(urlPathEqualTo("/connect/token"))
                 .willReturn(unauthorized().withBody("{\"error\":\"unauthorized\"}")));
 
         assertThrows(ConnectionFailedException.class,
@@ -83,7 +83,7 @@ public class ApiConnectionHandlerTest {
 
     @Test
     void allows_requests_with_no_chunking_policy() throws Exception {
-        wm.stubFor(post(urlPathEqualTo("/api/v1/authentication/auth/"))
+        wm.stubFor(post(urlPathEqualTo("/connect/token"))
                 .willReturn(okJson("{\"token\":\"abc123\",\"expiresIn\":3600}")));
 
         wm.stubFor(get(urlEqualTo("/api/v1/echo"))
@@ -94,5 +94,14 @@ public class ApiConnectionHandlerTest {
         EchoService client = handler.newClient(EchoService.class);
 
         assertEquals("ok", client.echo());
+    }
+
+    @Test
+    void throws_on_http_not_found_url() {
+        wm.stubFor(
+                post(urlPathEqualTo("/notfound/url")).willReturn(notFound())
+        );
+
+        assertThrows(ConnectionFailedException.class, () -> new TestableApiConnectionHandler(config("my-client","s3cr3t")));
     }
 }

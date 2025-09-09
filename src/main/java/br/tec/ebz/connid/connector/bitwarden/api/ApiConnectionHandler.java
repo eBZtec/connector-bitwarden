@@ -18,14 +18,12 @@ import org.identityconnectors.framework.common.exceptions.ConnectionFailedExcept
 
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public abstract class ApiConnectionHandler {
     private static final Log LOG = Log.getLog(ApiConnectionHandler.class);
-    private static final String AUTH_URL = "/api/v1/authentication/auth/";
+    private static final String AUTH_URL = "/connect/token";
 
     private BitwardenConfiguration configuration;
 
@@ -107,5 +105,4 @@ public abstract class ApiConnectionHandler {
         return token;
     }
 
-    protected void setConfiguration(BitwardenConfiguration configuration) { this.configuration = configuration; }
 }
