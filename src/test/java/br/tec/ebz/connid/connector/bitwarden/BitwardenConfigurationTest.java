@@ -13,12 +13,14 @@ class BitwardenConfigurationTest {
         BitwardenConfiguration configuration = new BitwardenConfiguration();
 
         configuration.setHostUrl("https://iam.validurl.com");
+        configuration.setAuthUrl("https://iam.validurl.com");
         configuration.setClientId("I_AM_A_CLIENTID");
         configuration.setClientSecret(new GuardedString("i_am_client_secret".toCharArray()));
 
         configuration.validate();
 
         assertEquals("https://iam.validurl.com", configuration.getHostUrl());
+        assertEquals("https://iam.validurl.com", configuration.getAuthUrl());
         assertEquals("I_AM_A_CLIENTID", configuration.getClientId());
         assertNotNull(configuration.getClientSecret());
     }
@@ -46,6 +48,7 @@ class BitwardenConfigurationTest {
     void validateNullClientIdConfiguration() {
         BitwardenConfiguration configuration = new BitwardenConfiguration();
         configuration.setHostUrl("https://iam.validurl.com");
+        configuration.setAuthUrl("https://iam.validurl.com");
         configuration.setClientSecret(new GuardedString("i_am_client_secret".toCharArray()));
 
         assertThrows(ConfigurationException.class, configuration::validate);
@@ -55,6 +58,7 @@ class BitwardenConfigurationTest {
     void validateEmptyClientIdConfiguration() {
         BitwardenConfiguration configuration = new BitwardenConfiguration();
         configuration.setHostUrl("https://iam.validurl.com");
+        configuration.setAuthUrl("https://iam.validurl.com");
         configuration.setClientId("");
         configuration.setClientSecret(new GuardedString("i_am_client_secret".toCharArray()));
 
@@ -65,6 +69,7 @@ class BitwardenConfigurationTest {
     void validateEmptyClientSecretConfiguration() {
         BitwardenConfiguration configuration = new BitwardenConfiguration();
         configuration.setHostUrl("https://iam.validurl.com");
+        configuration.setAuthUrl("https://iam.validurl.com");
         configuration.setClientId("I_AM_A_CLIENT_ID");
 
         assertThrows(ConfigurationException.class, configuration::validate);
@@ -75,6 +80,7 @@ class BitwardenConfigurationTest {
         BitwardenConfiguration configuration = new BitwardenConfiguration();
 
         configuration.setHostUrl("iam.validurl.com");
+        configuration.setAuthUrl("https://iam.validurl.com");
         configuration.setClientId("I_AM_A_CLIENTID");
         configuration.setClientSecret(new GuardedString("i_am_client_secret".toCharArray()));
 

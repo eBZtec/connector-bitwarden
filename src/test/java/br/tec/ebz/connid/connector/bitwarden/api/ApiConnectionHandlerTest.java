@@ -34,9 +34,14 @@ public class ApiConnectionHandlerTest {
         return "http://localhost:" + wm.port();
     }
 
+    private String authUrl() {
+        return "http://localhost:" + wm.port();
+    }
+
     private BitwardenConfiguration config(String clientId, String clientSecret) {
         BitwardenConfiguration c = new BitwardenConfiguration();
         c.setHostUrl(baseUrl());
+        c.setAuthUrl(authUrl());
         c.setClientId(clientId);
         c.setClientSecret(new GuardedString(clientSecret.toCharArray()));
         return c;

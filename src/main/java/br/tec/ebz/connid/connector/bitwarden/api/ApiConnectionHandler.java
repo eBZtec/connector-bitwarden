@@ -64,7 +64,7 @@ public abstract class ApiConnectionHandler {
     }
 
     private void fetchToken() throws MalformedURLException {
-        URI baseUri = URI.create(configuration.getHostUrl());
+        URI baseUri = URI.create(configuration.getAuthUrl());
         URI resolvedUri = baseUri.resolve(AUTH_URL);
 
         ObjectMapper mapper = new ObjectMapper();
@@ -96,8 +96,11 @@ public abstract class ApiConnectionHandler {
 
         Map<String, Object> responseBody = response.readEntity(new GenericType<>() {});
 
-        token = (String) responseBody.get("token");
-        expiresIn = (Integer) responseBody.get("expiresIn");
+        String accessToken = (String) responseBody.getOrDefault("access_token", responseBody.get("token"));
+        Number exp = (Number) responseBody.getOrDefault("expires_in", responseBody.get("expiresIn"));
+
+        token = accessToken;
+        expiresIn = exp != null ? exp.intValue() : null;
 
     }
 

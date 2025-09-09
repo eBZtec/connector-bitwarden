@@ -29,6 +29,7 @@ public class BitwardenConfiguration extends AbstractConfiguration {
 
     private static final Log LOG = Log.getLog(BitwardenConfiguration.class);
 
+    private String authUrl;
     private String hostUrl;
     private String clientId;
     private GuardedString clientSecret;
@@ -48,10 +49,24 @@ public class BitwardenConfiguration extends AbstractConfiguration {
     }
 
     @ConfigurationProperty(
+            displayMessageKey = "bitwarden.config.authUrl" ,
+            helpMessageKey = "bitwarden.config.authUrl.help",
+            required = true,
+            order = 2
+    )
+    public String getAuthUrl() {
+        return authUrl;
+    }
+
+    public void setAuthUrl(String authUrl) {
+        this.authUrl = authUrl;
+    }
+
+    @ConfigurationProperty(
             displayMessageKey = "bitwarden.config.clientId" ,
             helpMessageKey = "bitwarden.config.clientId.help",
             required = true,
-            order = 2
+            order = 3
     )
     public String getClientId() {
         return clientId;
@@ -65,7 +80,7 @@ public class BitwardenConfiguration extends AbstractConfiguration {
             displayMessageKey = "bitwarden.config.clientSecret" ,
             helpMessageKey = "bitwarden.config.clientSecret.help",
             required = true,
-            order = 3,
+            order = 4,
             confidential = true
     )
     public GuardedString getClientSecret() {
@@ -82,6 +97,8 @@ public class BitwardenConfiguration extends AbstractConfiguration {
 
         if (hostUrl == null || hostUrl.isBlank()) {
             errorMessage = "Host url is required.";
+        } else if (authUrl == null || authUrl.isBlank()) {
+            errorMessage = "Authentication URL is required.";
         } else if (clientId == null || clientId.isBlank()) {
             errorMessage = "Client ID is required.";
         } else if (clientSecret == null) {
@@ -90,7 +107,13 @@ public class BitwardenConfiguration extends AbstractConfiguration {
             try {
                 new URL(hostUrl).toURI();
             } catch (Exception e) {
-                errorMessage = "Invalid URL. Please, provide a valid URL.";
+                errorMessage = "Invalid host URL. Please, provide a valid URL.";
+            }
+
+            try {
+                new URL(authUrl).toURI();
+            } catch (Exception e) {
+                errorMessage = "Invalid authentication URL. Please, provide a valid URL.";
             }
         }
 
