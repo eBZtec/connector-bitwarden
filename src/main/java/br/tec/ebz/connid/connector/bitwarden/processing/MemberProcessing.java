@@ -32,6 +32,11 @@ public class MemberProcessing extends ObjectProcessing {
         return new Uid(memberId);
     }
 
+    public void delete(Uid uid, OperationOptions options) {
+        membersService.delete(uid.getUidValue());
+        LOG.ok("Member \"{0}\" deleted successfully.", uid.getUidValue());
+    }
+
     private BitwardenMember translate(Set<Attribute> attributes) {
         String email = getAttributeValue(Name.NAME, String.class, attributes);
         String name = getAttributeValue(MemberSchemaAttributes.NAME, String.class, attributes);
@@ -60,8 +65,5 @@ public class MemberProcessing extends ObjectProcessing {
         return member;
     }
 
-    public void delete(Uid uid, OperationOptions options) {
-        membersService.delete(uid.getUidValue());
-        LOG.ok("Member \"{0}\" deleted successfully.", uid.getUidValue());
-    }
+
 }

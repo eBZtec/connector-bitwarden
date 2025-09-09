@@ -16,4 +16,8 @@ public interface MembersService {
     @DELETE
     @Path("/{id}")
     void delete(@PathParam("id") String id);
+
+    @GET
+    @Path("/{id}")
+    BitwardenMember get(@PathParam("id") String id);
 }
