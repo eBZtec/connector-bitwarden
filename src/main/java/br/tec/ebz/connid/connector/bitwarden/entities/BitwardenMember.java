@@ -1,10 +1,14 @@
 package br.tec.ebz.connid.connector.bitwarden.entities;
 
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public class BitwardenMember extends BitwardenObject {
+public class BitwardenMember {
 
+    private String object;
+    private String id;
     private String name;
     private String email;
     private Boolean twoFactorEnabled;
@@ -15,6 +19,22 @@ public class BitwardenMember extends BitwardenObject {
     private Integer type;
     private String externalId;
     private List<String> groups;
+
+    public String getObject() {
+        return object;
+    }
+
+    public void setObject(String object) {
+        this.object = object;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -49,6 +69,8 @@ public class BitwardenMember extends BitwardenObject {
     }
 
     public List<BitwardenCollection> getCollections() {
+        if (collections == null) return new ArrayList<>();
+
         return collections;
     }
 
@@ -98,24 +120,43 @@ public class BitwardenMember extends BitwardenObject {
 
     @Override
     public final boolean equals(Object o) {
-        if (!(o instanceof BitwardenMember that)) return false;
+        if (!(o instanceof BitwardenMember member)) return false;
 
-        return getName().equals(that.getName()) && getEmail().equals(that.getEmail()) && getTwoFactorEnabled().equals(that.getTwoFactorEnabled()) && getStatus().equals(that.getStatus()) && getCollections().equals(that.getCollections()) && getResetPasswordEnrolled().equals(that.getResetPasswordEnrolled()) && getSsoExternalId().equals(that.getSsoExternalId()) && getType().equals(that.getType()) && getExternalId().equals(that.getExternalId()) && getGroups().equals(that.getGroups());
+        return getObject().equals(member.getObject()) && Objects.equals(getId(), member.getId()) && Objects.equals(getName(), member.getName()) && getEmail().equals(member.getEmail()) && Objects.equals(getTwoFactorEnabled(), member.getTwoFactorEnabled()) && getStatus().equals(member.getStatus()) && Objects.equals(getCollections(), member.getCollections()) && Objects.equals(getResetPasswordEnrolled(), member.getResetPasswordEnrolled()) && Objects.equals(getSsoExternalId(), member.getSsoExternalId()) && getType().equals(member.getType()) && Objects.equals(getExternalId(), member.getExternalId()) && Objects.equals(getGroups(), member.getGroups());
     }
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + getName().hashCode();
+        int result = getObject().hashCode();
+        result = 31 * result + Objects.hashCode(getId());
+        result = 31 * result + Objects.hashCode(getName());
         result = 31 * result + getEmail().hashCode();
-        result = 31 * result + getTwoFactorEnabled().hashCode();
+        result = 31 * result + Objects.hashCode(getTwoFactorEnabled());
         result = 31 * result + getStatus().hashCode();
-        result = 31 * result + getCollections().hashCode();
-        result = 31 * result + getResetPasswordEnrolled().hashCode();
-        result = 31 * result + getSsoExternalId().hashCode();
+        result = 31 * result + Objects.hashCode(getCollections());
+        result = 31 * result + Objects.hashCode(getResetPasswordEnrolled());
+        result = 31 * result + Objects.hashCode(getSsoExternalId());
         result = 31 * result + getType().hashCode();
-        result = 31 * result + getExternalId().hashCode();
-        result = 31 * result + getGroups().hashCode();
+        result = 31 * result + Objects.hashCode(getExternalId());
+        result = 31 * result + Objects.hashCode(getGroups());
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "BitwardenMember{" +
+                "object='" + object + '\'' +
+                ", id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", twoFactorEnabled=" + twoFactorEnabled +
+                ", status=" + status +
+                ", collections=" + collections +
+                ", resetPasswordEnrolled=" + resetPasswordEnrolled +
+                ", ssoExternalId='" + ssoExternalId + '\'' +
+                ", type=" + type +
+                ", externalId='" + externalId + '\'' +
+                ", groups=" + groups +
+                '}';
     }
 }
