@@ -30,7 +30,7 @@ public interface GroupsService {
     BitwardenGroup update(@PathParam("id") String id, BitwardenGroup group);
 
     @GET
-    @Path("/{id}/group-ids")
+    @Path("/{id}/member-ids")
     List<String> getGroupMembers(@PathParam("id") String id);
 
     @GET

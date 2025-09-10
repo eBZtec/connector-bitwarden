@@ -10,6 +10,7 @@ public class BitwardenGroup {
     private String name;
     private String externalId;
     private List<BitwardenCollections> collections;
+    private List<String> members;
 
     public String getId() {
         return id;
@@ -44,7 +45,6 @@ public class BitwardenGroup {
     }
 
     public List<BitwardenCollections> getCollections() {
-        if (collections == null) return new ArrayList<>();
         return collections;
     }
 
@@ -52,20 +52,29 @@ public class BitwardenGroup {
         this.collections = collections;
     }
 
+    public List<String> getMembers() {
+        return members;
+    }
+
+    public void setMembers(List<String> members) {
+        this.members = members;
+    }
+
     @Override
     public final boolean equals(Object o) {
         if (!(o instanceof BitwardenGroup group)) return false;
 
-        return getId().equals(group.getId()) && getObject().equals(group.getObject()) && Objects.equals(getName(), group.getName()) && Objects.equals(getExternalId(), group.getExternalId()) && Objects.equals(getCollections(), group.getCollections());
+        return getId().equals(group.getId()) && getObject().equals(group.getObject()) && getName().equals(group.getName()) && Objects.equals(getExternalId(), group.getExternalId()) && Objects.equals(getCollections(), group.getCollections()) && Objects.equals(getMembers(), group.getMembers());
     }
 
     @Override
     public int hashCode() {
         int result = getId().hashCode();
         result = 31 * result + getObject().hashCode();
-        result = 31 * result + Objects.hashCode(getName());
+        result = 31 * result + getName().hashCode();
         result = 31 * result + Objects.hashCode(getExternalId());
         result = 31 * result + Objects.hashCode(getCollections());
+        result = 31 * result + Objects.hashCode(getMembers());
         return result;
     }
 
@@ -77,6 +86,7 @@ public class BitwardenGroup {
                 ", name='" + name + '\'' +
                 ", externalId='" + externalId + '\'' +
                 ", collections=" + collections +
+                ", members=" + members +
                 '}';
     }
 }

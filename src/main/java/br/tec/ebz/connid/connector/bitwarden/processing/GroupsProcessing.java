@@ -85,6 +85,9 @@ public class GroupsProcessing extends ObjectProcessing{
 
         if (group == null) throw new UnknownUidException("Group \"" + id + "\" not found.");
 
+        List<String> members = groupsService.getGroupMembers(id);
+        group.setMembers(members);
+
         LOG.ok("Found \"{0}\" group", group);
         return translate(group);
     }
@@ -96,6 +99,7 @@ public class GroupsProcessing extends ObjectProcessing{
         addAttribute(connectorObject, Uid.NAME, group.getId());
         addAttribute(connectorObject, Name.NAME, group.getName());
         addAttribute(connectorObject, GroupSchemaAttributes.EXTERNAL_ID, group.getExternalId());
+        addAttribute(connectorObject, GroupSchemaAttributes.MEMBERS, group.getMembers());
 
         return connectorObject.build();
     }
@@ -104,6 +108,7 @@ public class GroupsProcessing extends ObjectProcessing{
         String id = getAttributeValue(Uid.NAME, String.class, attributes);
         String name = getAttributeValue(Name.NAME, String.class, attributes);
         String externalId = getAttributeValue(GroupSchemaAttributes.EXTERNAL_ID, String.class, attributes);
+        List<String> members = getAttributeValue(GroupSchemaAttributes.MEMBERS, List.class, attributes);
 
         BitwardenGroup group = new BitwardenGroup();
 
@@ -111,6 +116,7 @@ public class GroupsProcessing extends ObjectProcessing{
 
         group.setName(name);
         group.setExternalId(externalId);
+        group.setMembers(members);
         group.setObject("group");
 
         return group;
