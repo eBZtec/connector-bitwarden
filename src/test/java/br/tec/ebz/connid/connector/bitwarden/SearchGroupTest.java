@@ -2,6 +2,7 @@ package br.tec.ebz.connid.connector.bitwarden;
 
 import br.tec.ebz.connid.connector.bitwarden.processing.GroupsProcessing;
 import br.tec.ebz.connid.connector.bitwarden.processing.MemberProcessing;
+import br.tec.ebz.connid.connector.bitwarden.processing.ObjectProcessing;
 import br.tec.ebz.connid.connector.bitwarden.schema.GroupSchemaAttributes;
 import br.tec.ebz.connid.connector.bitwarden.schema.MemberSchemaAttributes;
 import org.identityconnectors.framework.api.ConnectorFacade;
@@ -82,5 +83,8 @@ public class SearchGroupTest extends BitwardenConfigurationHandler{
         List<ConnectorObject> objects = handler.getObjects();
 
         assertEquals(1, objects.size());
+
+        facade.delete(MemberProcessing.OBJECT_CLASS, memberUid, null);
+        facade.delete(GroupsProcessing.OBJECT_CLASS, groupUid, null);
     }
 }
