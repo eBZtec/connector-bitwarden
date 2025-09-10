@@ -1,7 +1,6 @@
 package br.tec.ebz.connid.connector.bitwarden.processing;
 
 import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenMember;
-import br.tec.ebz.connid.connector.bitwarden.entities.BiwardenUpdateMemberGroups;
 import br.tec.ebz.connid.connector.bitwarden.schema.MemberSchemaAttributes;
 import br.tec.ebz.connid.connector.bitwarden.services.MembersService;
 import org.identityconnectors.common.logging.Log;
@@ -10,7 +9,6 @@ import org.identityconnectors.framework.common.objects.*;
 import org.identityconnectors.framework.common.objects.filter.EqualsFilter;
 import org.identityconnectors.framework.common.objects.filter.Filter;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
