@@ -4,9 +4,11 @@ import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenGroup;
 import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenListResponse;
 import br.tec.ebz.connid.connector.bitwarden.schema.GroupSchemaAttributes;
 import br.tec.ebz.connid.connector.bitwarden.services.GroupsService;
+import br.tec.ebz.connid.connector.bitwarden.services.MembersService;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.UnknownUidException;
 import org.identityconnectors.framework.common.objects.*;
+import org.identityconnectors.framework.common.objects.filter.ContainsAllValuesFilter;
 import org.identityconnectors.framework.common.objects.filter.EqualsFilter;
 import org.identityconnectors.framework.common.objects.filter.Filter;
 
@@ -21,9 +23,11 @@ public class GroupsProcessing extends ObjectProcessing{
     public static final ObjectClass OBJECT_CLASS = new ObjectClass(OBJECT_CLASS_NAME);
 
     private final GroupsService groupsService;
+    private final MembersService membersService;
 
-    public GroupsProcessing(GroupsService groupsService) {
+    public GroupsProcessing(GroupsService groupsService, MembersService membersService) {
         this.groupsService = groupsService;
+        this.membersService = membersService;
     }
 
     public Uid create(Set<Attribute> attributes, OperationOptions options) {
@@ -74,6 +78,29 @@ public class GroupsProcessing extends ObjectProcessing{
 
                 handler.handle(getObject(id));
                 LOG.ok("Member \"{0}\" was found.", id);
+            }
+        } else if (query instanceof ContainsAllValuesFilter containsAllValuesFilter) {
+            Attribute attribute = containsAllValuesFilter.getAttribute();
+
+            if (attribute != null) {
+                String attributeName = attribute.getName();
+                List<Object> attributeValues = attribute.getValue();
+
+                if (!attributeName.equals(GroupSchemaAttributes.MEMBERS))
+                    throw new UnsupportedOperationException("Could not search member, reason: attribute " + attributeName + " is not supported by contains all values filter");
+
+                if (attributeValues.size() != 1)
+                    throw new UnsupportedOperationException("Could not search member, reason: search attribute must have only one value. Found " + attributeValues.size());
+
+                String id = String.valueOf(attributeValues.get(0));
+                List<String> memberGroupsIds = membersService.getMemberGroups(id);
+
+                for (String groupId: memberGroupsIds) {
+                    handler.handle(getObject(groupId));
+                }
+
+                LOG.ok("Found {0} groups for user {1}", memberGroupsIds.size(), id);
+
             }
         } else {
             throw new UnsupportedOperationException("Filter " + query + " is not supported.");

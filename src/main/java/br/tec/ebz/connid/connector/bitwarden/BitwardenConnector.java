@@ -57,7 +57,7 @@ public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp
             this.connection.setupServices();
 
             memberProcessing = new MemberProcessing(this.connection.getMembersService());
-            groupsProcessing = new GroupsProcessing(this.connection.getGroupsService());
+            groupsProcessing = new GroupsProcessing(this.connection.getGroupsService(), this.connection.getMembersService());
 
             LOG.ok("Connector instance initialized successfully.");
         } catch (MalformedURLException e) {
