@@ -1,5 +1,6 @@
 package br.tec.ebz.connid.connector.bitwarden.processing;
 
+import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenListResponse;
 import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenMember;
 import br.tec.ebz.connid.connector.bitwarden.schema.MemberSchemaAttributes;
 import br.tec.ebz.connid.connector.bitwarden.services.MembersService;
@@ -68,7 +69,7 @@ public class MemberProcessing extends ObjectProcessing {
 
                 if (!attributeName.equals(Uid.NAME)) throw new UnsupportedOperationException("Could not search member, reason: attribute " + attributeName + " is not supported by search operation");
 
-                if (attributeValues.size() != 1) throw new UnsupportedOperationException("Could not search meber, reason: search attribute must have only one value. Found " + attributeValues.size());
+                if (attributeValues.size() != 1) throw new UnsupportedOperationException("Could not search member, reason: search attribute must have only one value. Found " + attributeValues.size());
                 String id = String.valueOf(attributeValues.get(0));
 
                 handler.handle(getObject(id));
@@ -80,6 +81,13 @@ public class MemberProcessing extends ObjectProcessing {
     }
 
     private void searchAll(ResultsHandler handler, OperationOptions options) {
+        BitwardenListResponse<BitwardenMember> members = membersService.list();
+
+        LOG.info("Found {0} members", members.getData().size());
+
+        for (BitwardenMember member: members.getData()) {
+            handler.handle(translate(member));
+        }
     }
 
     private ConnectorObject getObject(String id) {

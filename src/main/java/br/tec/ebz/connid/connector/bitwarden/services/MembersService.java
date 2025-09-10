@@ -1,7 +1,7 @@
 package br.tec.ebz.connid.connector.bitwarden.services;
 
+import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenListResponse;
 import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenMember;
-import br.tec.ebz.connid.connector.bitwarden.entities.BiwardenUpdateMemberGroups;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 
@@ -28,11 +28,11 @@ public interface MembersService {
     @Path("/{id}")
     BitwardenMember update(@PathParam("id") String id, BitwardenMember member);
 
-    @PUT
-    @Path("/{id}/group-ids")
-    void updateMemberGroups(@PathParam("id") String id, BiwardenUpdateMemberGroups body);
-
     @GET
     @Path("/{id}/group-ids")
     List<String> getMemberGroups(@PathParam("id") String id);
+
+    @GET
+    @Path("")
+    BitwardenListResponse<BitwardenMember> list();
 }
