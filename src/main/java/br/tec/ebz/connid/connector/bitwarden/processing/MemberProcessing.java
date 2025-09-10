@@ -44,17 +44,7 @@ public class MemberProcessing extends ObjectProcessing {
 
         BitwardenMember updatedMember = membersService.update(uid.getUidValue(), member);
 
-        //updateMemberGroups(uid, member.getGroups());
-
         LOG.ok("Member \"{0}\" updated successfully.", uid.getUidValue());
-    }
-
-    private void updateMemberGroups(Uid uid, List<String> groups) {
-        BiwardenUpdateMemberGroups updateMemberGroups = new BiwardenUpdateMemberGroups();
-        updateMemberGroups.setGroupIds(groups);
-
-        membersService.updateMemberGroups(uid.getUidValue(), updateMemberGroups);
-        LOG.ok("Member \"{0}\" groups {1} updated successfully.", uid.getUidValue(), updateMemberGroups.getGroupIds());
     }
 
     public void delete(Uid uid, OperationOptions options) {
