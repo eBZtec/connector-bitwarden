@@ -148,6 +148,21 @@ public class MemberProcessing extends ObjectProcessing {
         addAttribute(connectorObject, MemberSchemaAttributes.EXTERNAL_ID, member.getExternalId());
         addAttribute(connectorObject, MemberSchemaAttributes.GROUPS, member.getGroups());
 
+        if (member.getPermissions() != null) {
+            addAttribute(connectorObject, MemberSchemaAttributes.PERMISSIONS_ACCESS_EVENTS_LOGS, member.getPermissions().getAccessEventsLogs());
+            addAttribute(connectorObject, MemberSchemaAttributes.PERMISSIONS_ACCESS_REPORTS, member.getPermissions().getAccessReports());
+            addAttribute(connectorObject, MemberSchemaAttributes.PERMISSIONS_ACCESS_IMPORT_EXPORT, member.getPermissions().getAccessImportExport());
+            addAttribute(connectorObject, MemberSchemaAttributes.PERMISSIONS_CREATE_NEW_COLLECTIONS, member.getPermissions().getCreateNewCollection());
+            addAttribute(connectorObject, MemberSchemaAttributes.PERMISSIONS_EDIT_ANY_COLLECTION, member.getPermissions().getEditAnyCollection());
+            addAttribute(connectorObject, MemberSchemaAttributes.PERMISSIONS_DELETE_ANY_COLLECTION, member.getPermissions().getDeleteAnyCollection());
+            addAttribute(connectorObject, MemberSchemaAttributes.PERMISSIONS_MANAGE_GROUPS, member.getPermissions().getManageGroups());
+            addAttribute(connectorObject, MemberSchemaAttributes.PERMISSIONS_MANAGE_POLICIES, member.getPermissions().getManagePolicies());
+            addAttribute(connectorObject, MemberSchemaAttributes.PERMISSIONS_MANAGE_SSO, member.getPermissions().getManageSso());
+            addAttribute(connectorObject, MemberSchemaAttributes.PERMISSIONS_MANAGE_USERS, member.getPermissions().getManageUsers());
+            addAttribute(connectorObject, MemberSchemaAttributes.PERMISSIONS_MANAGE_RESET_PASSWORD, member.getPermissions().getManageResetPassword());
+            addAttribute(connectorObject, MemberSchemaAttributes.PERMISSIONS_MANAGE_SCIM, member.getPermissions().getManageScim());
+        }
+
         return connectorObject.build();
     }
 

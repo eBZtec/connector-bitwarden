@@ -19,6 +19,7 @@ public class BitwardenMember {
     private Integer type;
     private String externalId;
     private List<String> groups;
+    private BitwardenPermissions permissions;
 
     public String getObject() {
         return object;
@@ -121,11 +122,19 @@ public class BitwardenMember {
         this.groups = groups;
     }
 
+    public BitwardenPermissions getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(BitwardenPermissions permissions) {
+        this.permissions = permissions;
+    }
+
     @Override
     public final boolean equals(Object o) {
         if (!(o instanceof BitwardenMember member)) return false;
 
-        return getObject().equals(member.getObject()) && Objects.equals(getId(), member.getId()) && Objects.equals(getName(), member.getName()) && getEmail().equals(member.getEmail()) && Objects.equals(getTwoFactorEnabled(), member.getTwoFactorEnabled()) && getStatus().equals(member.getStatus()) && Objects.equals(getCollections(), member.getCollections()) && Objects.equals(getResetPasswordEnrolled(), member.getResetPasswordEnrolled()) && Objects.equals(getSsoExternalId(), member.getSsoExternalId()) && getType().equals(member.getType()) && Objects.equals(getExternalId(), member.getExternalId()) && Objects.equals(getGroups(), member.getGroups());
+        return getObject().equals(member.getObject()) && Objects.equals(getId(), member.getId()) && Objects.equals(getName(), member.getName()) && getEmail().equals(member.getEmail()) && Objects.equals(getTwoFactorEnabled(), member.getTwoFactorEnabled()) && getStatus().equals(member.getStatus()) && Objects.equals(getCollections(), member.getCollections()) && Objects.equals(getResetPasswordEnrolled(), member.getResetPasswordEnrolled()) && Objects.equals(getSsoExternalId(), member.getSsoExternalId()) && getType().equals(member.getType()) && Objects.equals(getExternalId(), member.getExternalId()) && Objects.equals(getGroups(), member.getGroups()) && Objects.equals(getPermissions(), member.getPermissions());
     }
 
     @Override
@@ -142,6 +151,7 @@ public class BitwardenMember {
         result = 31 * result + getType().hashCode();
         result = 31 * result + Objects.hashCode(getExternalId());
         result = 31 * result + Objects.hashCode(getGroups());
+        result = 31 * result + Objects.hashCode(getPermissions());
         return result;
     }
 
@@ -160,6 +170,7 @@ public class BitwardenMember {
                 ", type=" + type +
                 ", externalId='" + externalId + '\'' +
                 ", groups=" + groups +
+                ", permissions=" + permissions +
                 '}';
     }
 }
