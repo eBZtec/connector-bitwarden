@@ -4,11 +4,13 @@ import br.tec.ebz.connid.connector.bitwarden.processing.MemberProcessing;
 import br.tec.ebz.connid.connector.bitwarden.schema.MemberSchemaAttributes;
 import org.identityconnectors.framework.api.ConnectorFacade;
 import org.identityconnectors.framework.common.objects.*;
+import org.identityconnectors.framework.common.objects.filter.EqualsFilter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class UpdateMemberTest extends BitwardenConfigurationHandler {
@@ -16,6 +18,8 @@ public class UpdateMemberTest extends BitwardenConfigurationHandler {
     private String email;
     private String name;
     private String login;
+
+    private String group = "c1f70335-efdf-4337-a6f8-b35200e5f299";
 
     @BeforeEach
     public void generateId() {
@@ -56,6 +60,27 @@ public class UpdateMemberTest extends BitwardenConfigurationHandler {
         deltaAttributes.add(builder.build());
 
         facade.updateDelta(MemberProcessing.OBJECT_CLASS, uid, deltaAttributes, null);
+
+        ListResultHandler handler = new ListResultHandler();
+        Attribute attribute = AttributeBuilder.build(Uid.NAME, uid.getUidValue());
+        EqualsFilter filter = new EqualsFilter(attribute);
+
+        facade.search(MemberProcessing.OBJECT_CLASS, filter, handler, null);
+
+        List<ConnectorObject> objects = handler.getObjects();
+
+        assertEquals(1, objects.size());
+
+        ConnectorObject connectorObject = objects.get(0);
+
+        Attribute groups = connectorObject.getAttributeByName(MemberSchemaAttributes.GROUPS);
+        List<Object> groupValues = groups.getValue();
+
+        assertEquals(1, groupValues.size());
+
+        String groupUpdated = groupValues.get(0).toString();
+
+        assertEquals(group, groupUpdated);
 
         facade.delete(MemberProcessing.OBJECT_CLASS, uid, null);
     }

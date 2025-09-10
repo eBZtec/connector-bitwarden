@@ -17,22 +17,23 @@
 package br.tec.ebz.connid.connector.bitwarden;
 
 import br.tec.ebz.connid.connector.bitwarden.processing.MemberProcessing;
+import org.identityconnectors.common.CollectionUtil;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 import org.identityconnectors.framework.common.objects.*;
+import org.identityconnectors.framework.common.objects.filter.Filter;
+import org.identityconnectors.framework.common.objects.filter.FilterTranslator;
 import org.identityconnectors.framework.spi.Configuration;
 import org.identityconnectors.framework.spi.Connector;
 import org.identityconnectors.framework.spi.ConnectorClass;
-import org.identityconnectors.framework.spi.operations.CreateOp;
-import org.identityconnectors.framework.spi.operations.DeleteOp;
-import org.identityconnectors.framework.spi.operations.TestOp;
-import org.identityconnectors.framework.spi.operations.UpdateDeltaOp;
+import org.identityconnectors.framework.spi.operations.*;
 
 import java.net.MalformedURLException;
+import java.util.List;
 import java.util.Set;
 
 @ConnectorClass(displayNameKey = "bitwarden.connector.display", configurationClass = BitwardenConfiguration.class)
-public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp, UpdateDeltaOp {
+public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp, UpdateDeltaOp, SearchOp<Filter> {
 
     private static final Log LOG = Log.getLog(BitwardenConnector.class);
 
@@ -115,5 +116,27 @@ public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp
             throw e;
         }
         return Set.of();
+    }
+
+    @Override
+    public FilterTranslator<Filter> createFilterTranslator(ObjectClass objectClass, OperationOptions options) {
+        return new FilterTranslator<Filter>() {
+            @Override
+            public List<Filter> translate(Filter filter) {
+                return CollectionUtil.newList(filter);
+            }
+        };
+    }
+
+    @Override
+    public void executeQuery(ObjectClass objectClass, Filter query, ResultsHandler handler, OperationOptions options) {
+        try {
+            if (objectClass.is(MemberProcessing.OBJECT_CLASS_NAME)) {
+                memberProcessing.search(query, handler, options);
+            }
+        } catch (Exception e) {
+            LOG.error("Could not delete object, reason: {0}", e.getMessage());
+            throw e;
+        }
     }
 }

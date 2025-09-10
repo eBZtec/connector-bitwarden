@@ -6,6 +6,8 @@ import br.tec.ebz.connid.connector.bitwarden.services.MembersService;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.UnknownUidException;
 import org.identityconnectors.framework.common.objects.*;
+import org.identityconnectors.framework.common.objects.filter.EqualsFilter;
+import org.identityconnectors.framework.common.objects.filter.Filter;
 
 import java.util.List;
 import java.util.Set;
@@ -48,10 +50,44 @@ public class MemberProcessing extends ObjectProcessing {
         LOG.ok("Member \"{0}\" deleted successfully.", uid.getUidValue());
     }
 
+    public void search(Filter query, ResultsHandler handler, OperationOptions options) {
+        if (query == null) {
+            searchAll(handler, options);
+        } else {
+            searchByFilter(query, handler, options);
+        }
+    }
+
+    private void searchByFilter(Filter query, ResultsHandler handler, OperationOptions options) {
+        if (query instanceof EqualsFilter equalsFilter) {
+            Attribute attribute = equalsFilter.getAttribute();
+
+            if (attribute != null) {
+                String attributeName = attribute.getName();
+                List<Object> attributeValues = attribute.getValue();
+
+                if (!attributeName.equals(Uid.NAME)) throw new UnsupportedOperationException("Could not search member, reason: attribute " + attributeName + " is not supported by search operation");
+
+                if (attributeValues.size() != 1) throw new UnsupportedOperationException("Could not search meber, reason: search attribute must have only one value. Found " + attributeValues.size());
+                String id = String.valueOf(attributeValues.get(0));
+
+                handler.handle(getObject(id));
+                LOG.ok("Member \"{0}\" was found.", id);
+            }
+        } else {
+            throw new UnsupportedOperationException("Filter " + query + " is not supported.");
+        }
+    }
+
+    private void searchAll(ResultsHandler handler, OperationOptions options) {
+    }
+
     private ConnectorObject getObject(String id) {
         BitwardenMember member = membersService.get(id);
 
         if (member == null) throw new UnknownUidException("Member id \"" + id + "\" does not exists");
+
+        LOG.ok("Found member {0} for id \"{1}\"", member, id);
 
         return translate(member);
     }

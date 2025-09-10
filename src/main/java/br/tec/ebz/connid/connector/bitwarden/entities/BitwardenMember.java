@@ -111,6 +111,9 @@ public class BitwardenMember {
     }
 
     public List<String> getGroups() {
+
+        if (groups == null) return new ArrayList<>();
+
         return groups;
     }
 
