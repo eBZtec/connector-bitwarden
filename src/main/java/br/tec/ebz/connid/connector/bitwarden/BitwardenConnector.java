@@ -16,6 +16,7 @@
 
 package br.tec.ebz.connid.connector.bitwarden;
 
+import br.tec.ebz.connid.connector.bitwarden.processing.GroupsProcessing;
 import br.tec.ebz.connid.connector.bitwarden.processing.MemberProcessing;
 import org.identityconnectors.common.CollectionUtil;
 import org.identityconnectors.common.logging.Log;
@@ -41,6 +42,7 @@ public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp
     private BitwardenConnection connection;
 
     private MemberProcessing memberProcessing;
+    private GroupsProcessing groupsProcessing;
 
     @Override
     public Configuration getConfiguration() {
@@ -55,6 +57,7 @@ public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp
             this.connection.setupServices();
 
             memberProcessing = new MemberProcessing(this.connection.getMembersService());
+            groupsProcessing = new GroupsProcessing(this.connection.getGroupsService());
 
             LOG.ok("Connector instance initialized successfully.");
         } catch (MalformedURLException e) {
@@ -84,6 +87,8 @@ public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp
         try {
             if (objectClass.is(MemberProcessing.OBJECT_CLASS_NAME)) {
                 uid = memberProcessing.create(createAttributes, options);
+            } else if (objectClass.is(GroupsProcessing.OBJECT_CLASS_NAME)) {
+                uid = groupsProcessing.create(createAttributes, options);
             }
         } catch (Exception e) {
             LOG.error("Could not create object, reason: {0}", e.getMessage());

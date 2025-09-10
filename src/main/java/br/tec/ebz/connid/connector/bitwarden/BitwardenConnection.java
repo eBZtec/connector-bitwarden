@@ -17,6 +17,7 @@
 package br.tec.ebz.connid.connector.bitwarden;
 
 import br.tec.ebz.connid.connector.bitwarden.api.ApiConnectionHandler;
+import br.tec.ebz.connid.connector.bitwarden.services.GroupsService;
 import br.tec.ebz.connid.connector.bitwarden.services.MembersService;
 import org.identityconnectors.common.logging.Log;
 
@@ -27,8 +28,10 @@ public class BitwardenConnection extends ApiConnectionHandler {
     private static final Log LOG = Log.getLog(BitwardenConnection.class);
 
     private static final Class<MembersService> MEMBERS_SERVICE = MembersService.class;
+    private static final Class<GroupsService> GROUPS_SERVICE = GroupsService.class;
 
     private MembersService membersService;
+    private GroupsService groupsService;
 
     private BitwardenConfiguration configuration;
 
@@ -38,11 +41,16 @@ public class BitwardenConnection extends ApiConnectionHandler {
 
     public void setupServices() throws MalformedURLException {
         membersService = setupClient(MEMBERS_SERVICE);
+        groupsService = setupClient(GROUPS_SERVICE);
         LOG.ok("API services initialized successfully.");
     }
 
     public MembersService getMembersService() {
         return membersService;
+    }
+
+    public GroupsService getGroupsService() {
+        return groupsService;
     }
 
     public void dispose() {

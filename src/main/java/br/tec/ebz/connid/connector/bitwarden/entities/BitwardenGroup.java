@@ -1,20 +1,19 @@
 package br.tec.ebz.connid.connector.bitwarden.entities;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
-public class BitwardenGroup extends BitwardenObject {
-
+public class BitwardenGroup {
+    private String id;
+    private String object;
     private String name;
     private String externalId;
-    private List<BitwardenCollection> collections;
 
-    public String getName() {
-        return name;
+    public String getId() {
+        return id;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getExternalId() {
@@ -25,42 +24,45 @@ public class BitwardenGroup extends BitwardenObject {
         this.externalId = externalId;
     }
 
-    public List<BitwardenCollection> getCollections() {
-        if (collections == null) {
-            return new ArrayList<>();
-        }
-
-        return collections;
+    public String getName() {
+        return name;
     }
 
-    public void setCollections(List<BitwardenCollection> collections) {
+    public void setName(String name) {
+        this.name = name;
+    }
 
-        this.collections = collections;
+    public String getObject() {
+        return object;
+    }
+
+    public void setObject(String object) {
+        this.object = object;
     }
 
     @Override
     public final boolean equals(Object o) {
         if (!(o instanceof BitwardenGroup that)) return false;
 
-        return getId().equals(that.getId()) && getName().equals(that.getName()) && getExternalId().equals(that.getExternalId()) && getCollections().equals(that.getCollections());
+        return getId().equals(that.getId()) && getObject().equals(that.getObject()) && Objects.equals(getName(), that.getName()) && Objects.equals(getExternalId(), that.getExternalId());
     }
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + getId().hashCode();
-        result = 31 * result + getName().hashCode();
-        result = 31 * result + getExternalId().hashCode();
-        result = 31 * result + getCollections().hashCode();
+        int result = getId().hashCode();
+        result = 31 * result + getObject().hashCode();
+        result = 31 * result + Objects.hashCode(getName());
+        result = 31 * result + Objects.hashCode(getExternalId());
         return result;
     }
 
     @Override
     public String toString() {
         return "BitwardenGroup{" +
+                "id='" + id + '\'' +
+                ", object='" + object + '\'' +
                 ", name='" + name + '\'' +
                 ", externalId='" + externalId + '\'' +
-                ", collections=" + collections +
-                "} " + super.toString();
+                '}';
     }
 }
