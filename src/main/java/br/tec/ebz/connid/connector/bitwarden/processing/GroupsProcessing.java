@@ -17,8 +17,8 @@ public class GroupsProcessing extends ObjectProcessing{
 
     private final GroupsService groupsService;
 
-    public GroupsProcessing(GroupsService groupssService) {
-        this.groupsService = groupssService;
+    public GroupsProcessing(GroupsService groupsService) {
+        this.groupsService = groupsService;
     }
 
     public Uid create(Set<Attribute> attributes, OperationOptions options) {
@@ -28,6 +28,12 @@ public class GroupsProcessing extends ObjectProcessing{
 
         LOG.ok("Group \"{0}\" created successfully.", group.getId());
         return new Uid(group.getId());
+    }
+
+    public void delete(Uid uid, OperationOptions options) {
+        groupsService.delete(uid.getUidValue());
+
+        LOG.ok("Group \"{0}\" deleted successfully", uid.getUidValue());
     }
 
     private BitwardenGroup translate(Set<Attribute> attributes) {

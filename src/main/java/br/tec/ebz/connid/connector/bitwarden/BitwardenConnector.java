@@ -103,6 +103,8 @@ public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp
         try {
             if (objectClass.is(MemberProcessing.OBJECT_CLASS_NAME)) {
                 memberProcessing.delete(uid, options);
+            } else if (objectClass.is(GroupsProcessing.OBJECT_CLASS_NAME)) {
+                groupsProcessing.delete(uid, options);
             }
         } catch (Exception e) {
             LOG.error("Could not delete object, reason: {0}", e.getMessage());
