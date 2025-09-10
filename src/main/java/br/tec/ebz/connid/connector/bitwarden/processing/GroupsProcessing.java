@@ -1,11 +1,16 @@
 package br.tec.ebz.connid.connector.bitwarden.processing;
 
 import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenGroup;
+import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenListResponse;
 import br.tec.ebz.connid.connector.bitwarden.schema.GroupSchemaAttributes;
 import br.tec.ebz.connid.connector.bitwarden.services.GroupsService;
 import org.identityconnectors.common.logging.Log;
+import org.identityconnectors.framework.common.exceptions.UnknownUidException;
 import org.identityconnectors.framework.common.objects.*;
+import org.identityconnectors.framework.common.objects.filter.EqualsFilter;
+import org.identityconnectors.framework.common.objects.filter.Filter;
 
+import java.util.List;
 import java.util.Set;
 
 public class GroupsProcessing extends ObjectProcessing{
@@ -34,6 +39,65 @@ public class GroupsProcessing extends ObjectProcessing{
         groupsService.delete(uid.getUidValue());
 
         LOG.ok("Group \"{0}\" deleted successfully", uid.getUidValue());
+    }
+
+    public void search(Filter query, ResultsHandler handler, OperationOptions options) {
+        if (query == null) {
+            searchAll(handler, options);
+        } else {
+            searchByFilter(query, handler, options);
+        }
+    }
+
+    private void searchAll(ResultsHandler handler, OperationOptions options) {
+        BitwardenListResponse<BitwardenGroup> groups = groupsService.list();
+
+        LOG.info("Found {0} groups", groups.getData().size());
+
+        for (BitwardenGroup group: groups.getData()) {
+            handler.handle(translate(group));
+        }
+    }
+
+    private void searchByFilter(Filter query, ResultsHandler handler, OperationOptions options) {
+        if (query instanceof EqualsFilter equalsFilter) {
+            Attribute attribute = equalsFilter.getAttribute();
+
+            if (attribute != null) {
+                String attributeName = attribute.getName();
+                List<Object> attributeValues = attribute.getValue();
+
+                if (!attributeName.equals(Uid.NAME)) throw new UnsupportedOperationException("Could not search, reason: attribute " + attributeName + " is not supported by search operation");
+
+                if (attributeValues.size() != 1) throw new UnsupportedOperationException("Could not search, reason: search attribute must have only one value. Found " + attributeValues.size());
+                String id = String.valueOf(attributeValues.get(0));
+
+                handler.handle(getObject(id));
+                LOG.ok("Member \"{0}\" was found.", id);
+            }
+        } else {
+            throw new UnsupportedOperationException("Filter " + query + " is not supported.");
+        }
+    }
+
+    private ConnectorObject getObject(String id) {
+        BitwardenGroup group = groupsService.get(id);
+
+        if (group == null) throw new UnknownUidException("Group \"" + id + "\" not found.");
+
+        LOG.ok("Found \"{0}\" group", group);
+        return translate(group);
+    }
+
+    private ConnectorObject translate(BitwardenGroup group) {
+        ConnectorObjectBuilder connectorObject = new ConnectorObjectBuilder();
+        connectorObject.setObjectClass(GroupsProcessing.OBJECT_CLASS);
+
+        addAttribute(connectorObject, Uid.NAME, group.getId());
+        addAttribute(connectorObject, Name.NAME, group.getName());
+        addAttribute(connectorObject, GroupSchemaAttributes.EXTERNAL_ID, group.getExternalId());
+
+        return connectorObject.build();
     }
 
     private BitwardenGroup translate(Set<Attribute> attributes) {

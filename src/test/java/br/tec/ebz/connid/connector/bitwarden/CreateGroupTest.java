@@ -5,18 +5,14 @@ import br.tec.ebz.connid.connector.bitwarden.processing.MemberProcessing;
 import br.tec.ebz.connid.connector.bitwarden.schema.GroupSchemaAttributes;
 import br.tec.ebz.connid.connector.bitwarden.schema.MemberSchemaAttributes;
 import org.identityconnectors.framework.api.ConnectorFacade;
-import org.identityconnectors.framework.common.objects.Attribute;
-import org.identityconnectors.framework.common.objects.AttributeBuilder;
-import org.identityconnectors.framework.common.objects.Name;
-import org.identityconnectors.framework.common.objects.Uid;
+import org.identityconnectors.framework.common.objects.*;
+import org.identityconnectors.framework.common.objects.filter.EqualsFilter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class CreateGroupTest extends BitwardenConfigurationHandler{
@@ -40,7 +36,17 @@ public class CreateGroupTest extends BitwardenConfigurationHandler{
 
         Uid uid = facade.create(GroupsProcessing.OBJECT_CLASS, attributes, null);
 
-        assertNotNull(uid, "Uid cannot be null");
+        assertNotNull(uid, "Group uid cannot be null on creation");
+
+        ListResultHandler handler = new ListResultHandler();
+        Attribute attribute = AttributeBuilder.build(Uid.NAME, uid.getUidValue());
+        EqualsFilter filter = new EqualsFilter(attribute);
+
+        facade.search(GroupsProcessing.OBJECT_CLASS, filter, handler, null);
+
+        List<ConnectorObject> objects = handler.getObjects();
+
+        assertEquals(1, objects.size());
 
         facade.delete(GroupsProcessing.OBJECT_CLASS, uid, null);
     }
