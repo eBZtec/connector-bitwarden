@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Set;
 
 @ConnectorClass(displayNameKey = "bitwarden.connector.display", configurationClass = BitwardenConfiguration.class)
-public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp, UpdateDeltaOp, SearchOp<Filter> {
+public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp, UpdateDeltaOp, SearchOp<Filter>, SchemaOp {
 
     private static final Log LOG = Log.getLog(BitwardenConnector.class);
 
@@ -138,5 +138,14 @@ public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp
             LOG.error("Could not delete object, reason: {0}", e.getMessage());
             throw e;
         }
+    }
+
+    @Override
+    public Schema schema() {
+        SchemaBuilder schemaBuilder = new SchemaBuilder(BitwardenConnector.class);
+
+        schemaBuilder.defineObjectClass(memberProcessing.schema());
+
+        return schemaBuilder.build();
     }
 }
