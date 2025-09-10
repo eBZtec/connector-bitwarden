@@ -76,7 +76,7 @@ public class UpdateMemberTest extends BitwardenConfigurationHandler {
         Attribute groups = connectorObject.getAttributeByName(MemberSchemaAttributes.GROUPS);
         List<Object> groupValues = groups.getValue();
 
-        assertEquals(1, groupValues.size());
+        assertEquals(1, groupValues.size(), "Must have one group added");
 
         String groupUpdated = groupValues.get(0).toString();
 

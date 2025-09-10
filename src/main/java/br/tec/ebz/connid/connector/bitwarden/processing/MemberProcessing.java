@@ -1,6 +1,7 @@
 package br.tec.ebz.connid.connector.bitwarden.processing;
 
 import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenMember;
+import br.tec.ebz.connid.connector.bitwarden.entities.BiwardenUpdateMemberGroups;
 import br.tec.ebz.connid.connector.bitwarden.schema.MemberSchemaAttributes;
 import br.tec.ebz.connid.connector.bitwarden.services.MembersService;
 import org.identityconnectors.common.logging.Log;
@@ -9,6 +10,7 @@ import org.identityconnectors.framework.common.objects.*;
 import org.identityconnectors.framework.common.objects.filter.EqualsFilter;
 import org.identityconnectors.framework.common.objects.filter.Filter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -42,7 +44,17 @@ public class MemberProcessing extends ObjectProcessing {
 
         BitwardenMember updatedMember = membersService.update(uid.getUidValue(), member);
 
+        //updateMemberGroups(uid, member.getGroups());
+
         LOG.ok("Member \"{0}\" updated successfully.", uid.getUidValue());
+    }
+
+    private void updateMemberGroups(Uid uid, List<String> groups) {
+        BiwardenUpdateMemberGroups updateMemberGroups = new BiwardenUpdateMemberGroups();
+        updateMemberGroups.setGroupIds(groups);
+
+        membersService.updateMemberGroups(uid.getUidValue(), updateMemberGroups);
+        LOG.ok("Member \"{0}\" groups {1} updated successfully.", uid.getUidValue(), updateMemberGroups.getGroupIds());
     }
 
     public void delete(Uid uid, OperationOptions options) {
@@ -86,6 +98,8 @@ public class MemberProcessing extends ObjectProcessing {
         BitwardenMember member = membersService.get(id);
 
         if (member == null) throw new UnknownUidException("Member id \"" + id + "\" does not exists");
+
+        member.setGroups(membersService.getMemberGroups(id));
 
         LOG.ok("Found member {0} for id \"{1}\"", member, id);
 
