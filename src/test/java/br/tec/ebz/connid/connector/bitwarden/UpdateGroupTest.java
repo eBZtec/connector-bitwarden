@@ -166,6 +166,6 @@ public class UpdateGroupTest extends BitwardenConfigurationHandler{
         deltaAttributes.add(builder.build());
 
         facade.updateDelta(GroupsProcessing.OBJECT_CLASS, uid, deltaAttributes, null);
-
+        facade.delete(GroupsProcessing.OBJECT_CLASS, uid, null);
     }
 }
