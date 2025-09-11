@@ -16,6 +16,7 @@
 
 package br.tec.ebz.connid.connector.bitwarden;
 
+import br.tec.ebz.connid.connector.bitwarden.processing.CollectionAccessProcessing;
 import br.tec.ebz.connid.connector.bitwarden.processing.GroupsProcessing;
 import br.tec.ebz.connid.connector.bitwarden.processing.MemberProcessing;
 import org.identityconnectors.common.CollectionUtil;
@@ -154,6 +155,7 @@ public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp
         SchemaBuilder schemaBuilder = new SchemaBuilder(BitwardenConnector.class);
 
         schemaBuilder.defineObjectClass(memberProcessing.schema());
+        schemaBuilder.defineObjectClass(CollectionAccessProcessing.schema());
 
         return schemaBuilder.build();
     }

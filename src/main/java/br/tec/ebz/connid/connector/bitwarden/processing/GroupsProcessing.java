@@ -1,8 +1,11 @@
 package br.tec.ebz.connid.connector.bitwarden.processing;
 
+import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenCollectionsAccess;
 import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenGroup;
 import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenListResponse;
+import br.tec.ebz.connid.connector.bitwarden.schema.CollectionAccessSchemaAttributes;
 import br.tec.ebz.connid.connector.bitwarden.schema.GroupSchemaAttributes;
+import br.tec.ebz.connid.connector.bitwarden.schema.MemberSchemaAttributes;
 import br.tec.ebz.connid.connector.bitwarden.services.GroupsService;
 import br.tec.ebz.connid.connector.bitwarden.services.MembersService;
 import org.identityconnectors.common.logging.Log;
@@ -12,6 +15,7 @@ import org.identityconnectors.framework.common.objects.filter.ContainsAllValuesF
 import org.identityconnectors.framework.common.objects.filter.EqualsFilter;
 import org.identityconnectors.framework.common.objects.filter.Filter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -21,6 +25,8 @@ public class GroupsProcessing extends ObjectProcessing{
 
     public static final String OBJECT_CLASS_NAME = "group";
     public static final ObjectClass OBJECT_CLASS = new ObjectClass(OBJECT_CLASS_NAME);
+
+    public static final String COLLECTION_ACCESS_CLASS_NAME = "collection_access";
 
     private final GroupsService groupsService;
     private final MembersService membersService;
@@ -32,6 +38,8 @@ public class GroupsProcessing extends ObjectProcessing{
 
     public Uid create(Set<Attribute> attributes, OperationOptions options) {
         BitwardenGroup newGroup = translate(attributes);
+
+        LOG.ok("New Group request {0}", newGroup);
 
         BitwardenGroup group = groupsService.create(newGroup);
 
@@ -128,6 +136,23 @@ public class GroupsProcessing extends ObjectProcessing{
         addAttribute(connectorObject, GroupSchemaAttributes.EXTERNAL_ID, group.getExternalId());
         addAttribute(connectorObject, GroupSchemaAttributes.MEMBERS, group.getMembers());
 
+        List<ConnectorObjectReference> refs = new ArrayList<>();
+        for (BitwardenCollectionsAccess collectionsAccess: group.getCollections()) {
+            ConnectorObjectBuilder access = new ConnectorObjectBuilder();
+            access.setObjectClass(CollectionAccessProcessing.OBJECT_CLASS);
+
+            addAttribute(access, Uid.NAME, collectionsAccess.getId());
+            addAttribute(access, Name.NAME, collectionsAccess.getId());
+            addAttribute(access, CollectionAccessSchemaAttributes.ID, collectionsAccess.getId());
+            addAttribute(access, CollectionAccessSchemaAttributes.READ_ONLY, collectionsAccess.getReadOnly());
+            addAttribute(access, CollectionAccessSchemaAttributes.HIDE_PASSWORDS, collectionsAccess.getHidePasswords());
+            addAttribute(access, CollectionAccessSchemaAttributes.MANAGE, collectionsAccess.getManage());
+
+            refs.add(new ConnectorObjectReference(access.build()));
+        }
+
+        addAttribute(connectorObject, GroupSchemaAttributes.COLLECTIONS, refs);
+
         return connectorObject.build();
     }
 
@@ -145,7 +170,80 @@ public class GroupsProcessing extends ObjectProcessing{
         group.setExternalId(externalId);
         group.setMembers(members);
         group.setObject("group");
+        group.setCollections(getCollectionsAccesses(attributes));
 
         return group;
+    }
+
+    private static List<BitwardenCollectionsAccess> getCollectionsAccesses(Set<Attribute> attributes) {
+        AttributesAccessor accessor = new AttributesAccessor(attributes);
+
+        List<BitwardenCollectionsAccess> collectionsAccesses = new ArrayList<>();
+        Attribute collections = accessor.find(GroupSchemaAttributes.COLLECTIONS);
+
+        if (collections != null && collections.getValue() != null) {
+            for (Object v : collections.getValue()) {
+                ConnectorObjectReference ref = (ConnectorObjectReference) v;
+                collectionsAccesses.add(fromRef(ref));
+            }
+        }
+
+        return collectionsAccesses;
+    }
+
+    private static BitwardenCollectionsAccess fromRef(ConnectorObjectReference ref) {
+        BaseConnectorObject embedded = ref.getValue();
+        AttributesAccessor acc = new AttributesAccessor(embedded.getAttributes());
+
+        String collectionId = acc.findString(CollectionAccessSchemaAttributes.ID);
+        Boolean readOnly= acc.findBoolean(CollectionAccessSchemaAttributes.READ_ONLY);
+        Boolean hidePasswords = acc.findBoolean(CollectionAccessSchemaAttributes.HIDE_PASSWORDS);
+        Boolean manage = acc.findBoolean(CollectionAccessSchemaAttributes.MANAGE);
+
+        BitwardenCollectionsAccess access = new BitwardenCollectionsAccess();
+        access.setId(collectionId);
+        access.setReadOnly(readOnly != null ? readOnly : Boolean.FALSE);
+        access.setHidePassword(hidePasswords != null ? hidePasswords : Boolean.FALSE);
+        access.setManage(manage != null ? manage : Boolean.FALSE);;
+
+        return access;
+    }
+
+    public ObjectClassInfo schema() {
+        ObjectClassInfoBuilder objectClassInfoBuilder = new ObjectClassInfoBuilder();
+        objectClassInfoBuilder.setType(GroupsProcessing.OBJECT_CLASS_NAME);
+
+        objectClassInfoBuilder.addAttributeInfo(
+                buildAttributeInfo(
+                        Uid.NAME,
+                        String.class,
+                        MemberSchemaAttributes.ID,
+                        AttributeInfo.Flags.REQUIRED,
+                        AttributeInfo.Flags.NOT_UPDATEABLE
+                )
+        );
+
+        objectClassInfoBuilder.addAttributeInfo(
+                buildAttributeInfo(
+                        Name.NAME,
+                        String.class,
+                        MemberSchemaAttributes.EMAIL,
+                        AttributeInfo.Flags.REQUIRED
+                )
+        );
+
+        AttributeInfo collectionsRef =
+                new AttributeInfoBuilder(GroupSchemaAttributes.COLLECTIONS)
+                        .setType(org.identityconnectors.framework.common.objects.ConnectorObjectReference.class)
+                        .setReferencedObjectClassName(CollectionAccessProcessing.OBJECT_CLASS_NAME)
+                        .setSubtype("group-collection")
+                        .setRoleInReference("subject")
+                        .setMultiValued(true)
+                        .build();
+
+        objectClassInfoBuilder.addAttributeInfo(collectionsRef);
+
+
+        return objectClassInfoBuilder.build();
     }
 }

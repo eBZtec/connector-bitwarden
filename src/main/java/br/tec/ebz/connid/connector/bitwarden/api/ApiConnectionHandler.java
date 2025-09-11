@@ -8,6 +8,8 @@ import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 import jakarta.ws.rs.core.Form;
 import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.Response;
+import org.apache.cxf.interceptor.LoggingInInterceptor;
+import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.jaxrs.client.ClientConfiguration;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactoryBean;
 import org.apache.cxf.jaxrs.client.WebClient;
@@ -48,6 +50,8 @@ public abstract class ApiConnectionHandler {
         provider.setMapper(mapper);
 
         bean.setProvider(provider);
+//        bean.getInInterceptors().add(new LoggingInInterceptor());
+//        bean.getOutInterceptors().add(new LoggingOutInterceptor());
         bean.getOutInterceptors().add(new BearerAuthInterceptor(getAccessToken()));
 
         T proxy = bean.create(type);

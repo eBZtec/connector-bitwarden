@@ -5,4 +5,5 @@ public interface GroupSchemaAttributes {
     String NAME = "name";
     String EXTERNAL_ID = "externalId";
     String MEMBERS = "members";
+    String COLLECTIONS = "collections";
 }

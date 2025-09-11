@@ -1,6 +1,5 @@
 package br.tec.ebz.connid.connector.bitwarden.entities;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -9,7 +8,7 @@ public class BitwardenGroup {
     private String object;
     private String name;
     private String externalId;
-    private List<BitwardenCollections> collections;
+    private List<BitwardenCollectionsAccess> collections;
     private List<String> members;
 
     public String getId() {
@@ -44,11 +43,11 @@ public class BitwardenGroup {
         this.externalId = externalId;
     }
 
-    public List<BitwardenCollections> getCollections() {
+    public List<BitwardenCollectionsAccess> getCollections() {
         return collections;
     }
 
-    public void setCollections(List<BitwardenCollections> collections) {
+    public void setCollections(List<BitwardenCollectionsAccess> collections) {
         this.collections = collections;
     }
 

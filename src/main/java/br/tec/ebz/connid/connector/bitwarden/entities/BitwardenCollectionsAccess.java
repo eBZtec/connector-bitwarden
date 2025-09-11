@@ -2,10 +2,10 @@ package br.tec.ebz.connid.connector.bitwarden.entities;
 
 import java.util.Objects;
 
-public class BitwardenCollections {
+public class BitwardenCollectionsAccess {
     private String id;
     private Boolean readOnly;
-    private Boolean hidePassword;
+    private Boolean hidePasswords;
     private Boolean manage;
 
     public String getId() {
@@ -24,12 +24,12 @@ public class BitwardenCollections {
         this.manage = manage;
     }
 
-    public Boolean getHidePassword() {
-        return hidePassword;
+    public Boolean getHidePasswords() {
+        return hidePasswords;
     }
 
-    public void setHidePassword(Boolean hidePassword) {
-        this.hidePassword = hidePassword;
+    public void setHidePassword(Boolean hidePasswords) {
+        this.hidePasswords = hidePasswords;
     }
 
     public Boolean getReadOnly() {
@@ -42,16 +42,16 @@ public class BitwardenCollections {
 
     @Override
     public final boolean equals(Object o) {
-        if (!(o instanceof BitwardenCollections that)) return false;
+        if (!(o instanceof BitwardenCollectionsAccess that)) return false;
 
-        return getId().equals(that.getId()) && Objects.equals(getReadOnly(), that.getReadOnly()) && Objects.equals(getHidePassword(), that.getHidePassword()) && Objects.equals(getManage(), that.getManage());
+        return getId().equals(that.getId()) && Objects.equals(getReadOnly(), that.getReadOnly()) && Objects.equals(getHidePasswords(), that.getHidePasswords()) && Objects.equals(getManage(), that.getManage());
     }
 
     @Override
     public int hashCode() {
         int result = getId().hashCode();
         result = 31 * result + Objects.hashCode(getReadOnly());
-        result = 31 * result + Objects.hashCode(getHidePassword());
+        result = 31 * result + Objects.hashCode(getHidePasswords());
         result = 31 * result + Objects.hashCode(getManage());
         return result;
     }
@@ -61,7 +61,7 @@ public class BitwardenCollections {
         return "BitwardenCollections{" +
                 "id='" + id + '\'' +
                 ", readOnly=" + readOnly +
-                ", hidePassword=" + hidePassword +
+                ", hidePasswords=" + hidePasswords +
                 ", manage=" + manage +
                 '}';
     }
