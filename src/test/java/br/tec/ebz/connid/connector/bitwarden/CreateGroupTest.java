@@ -79,6 +79,6 @@ public class CreateGroupTest extends BitwardenConfigurationHandler{
 
         assertNotNull(uid, "Group uid cannot be null on creation");
 
-
+        facade.delete(GroupsProcessing.OBJECT_CLASS, uid, null);
     }
 }

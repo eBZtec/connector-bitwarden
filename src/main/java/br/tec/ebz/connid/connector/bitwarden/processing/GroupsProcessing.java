@@ -3,6 +3,7 @@ package br.tec.ebz.connid.connector.bitwarden.processing;
 import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenCollectionsAccess;
 import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenGroup;
 import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenListResponse;
+import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenMember;
 import br.tec.ebz.connid.connector.bitwarden.schema.CollectionAccessSchemaAttributes;
 import br.tec.ebz.connid.connector.bitwarden.schema.GroupSchemaAttributes;
 import br.tec.ebz.connid.connector.bitwarden.schema.MemberSchemaAttributes;
@@ -45,6 +46,17 @@ public class GroupsProcessing extends ObjectProcessing{
 
         LOG.ok("Group \"{0}\" created successfully.", group.getId());
         return new Uid(group.getId());
+    }
+
+    public void update(Uid uid, Set<AttributeDelta> modifications, OperationOptions options) {
+        ConnectorObject currentObject = getObject(uid.getUidValue());
+        Set<Attribute> updatedAttributes = updateObjectAttributes(uid, modifications, currentObject);
+        BitwardenGroup group = translate(updatedAttributes);
+
+        LOG.info("Updated Group {0}.", group);
+
+        groupsService.update(uid.getUidValue(), group);
+        LOG.ok("Group \"{0}\" updated successfully.");
     }
 
     public void delete(Uid uid, OperationOptions options) {
