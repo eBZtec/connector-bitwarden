@@ -55,7 +55,7 @@ public class GroupsProcessing extends ObjectProcessing{
         LOG.info("Updated Group {0}.", group);
 
         groupsService.update(uid.getUidValue(), group);
-        LOG.ok("Group \"{0}\" updated successfully.");
+        LOG.ok("Group \"{0}\" updated successfully.", uid.getUidValue());
     }
 
     public void delete(Uid uid, OperationOptions options) {
@@ -228,7 +228,7 @@ public class GroupsProcessing extends ObjectProcessing{
                 buildAttributeInfo(
                         Uid.NAME,
                         String.class,
-                        MemberSchemaAttributes.ID,
+                        GroupSchemaAttributes.ID,
                         AttributeInfo.Flags.REQUIRED,
                         AttributeInfo.Flags.NOT_UPDATEABLE
                 )
@@ -238,8 +238,15 @@ public class GroupsProcessing extends ObjectProcessing{
                 buildAttributeInfo(
                         Name.NAME,
                         String.class,
-                        MemberSchemaAttributes.EMAIL,
-                        AttributeInfo.Flags.REQUIRED
+                        GroupSchemaAttributes.NAME
+                )
+        );
+
+        objectClassInfoBuilder.addAttributeInfo(
+                buildAttributeInfo(
+                        GroupSchemaAttributes.EXTERNAL_ID,
+                        String.class,
+                        null
                 )
         );
 

@@ -17,6 +17,7 @@
 package br.tec.ebz.connid.connector.bitwarden;
 
 import br.tec.ebz.connid.connector.bitwarden.processing.AccessProcessing;
+import br.tec.ebz.connid.connector.bitwarden.processing.CollectionsProcessing;
 import br.tec.ebz.connid.connector.bitwarden.processing.GroupsProcessing;
 import br.tec.ebz.connid.connector.bitwarden.processing.MemberProcessing;
 import org.identityconnectors.common.CollectionUtil;
@@ -44,6 +45,7 @@ public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp
 
     private MemberProcessing memberProcessing;
     private GroupsProcessing groupsProcessing;
+    private CollectionsProcessing collectionsProcessing;
 
     @Override
     public Configuration getConfiguration() {
@@ -59,6 +61,7 @@ public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp
 
             memberProcessing = new MemberProcessing(this.connection.getMembersService());
             groupsProcessing = new GroupsProcessing(this.connection.getGroupsService(), this.connection.getMembersService());
+            collectionsProcessing = new CollectionsProcessing(this.connection.getCollectionsService());
 
             LOG.ok("Connector instance initialized successfully.");
         } catch (MalformedURLException e) {
@@ -90,6 +93,8 @@ public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp
                 uid = memberProcessing.create(createAttributes, options);
             } else if (objectClass.is(GroupsProcessing.OBJECT_CLASS_NAME)) {
                 uid = groupsProcessing.create(createAttributes, options);
+            } else {
+                throw new UnsupportedOperationException("Object " + objectClass.getObjectClassValue() + " is not supported by the connector.");
             }
         } catch (Exception e) {
             LOG.error("Could not create object, reason: {0}", e.getMessage());
@@ -106,6 +111,8 @@ public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp
                 memberProcessing.delete(uid, options);
             } else if (objectClass.is(GroupsProcessing.OBJECT_CLASS_NAME)) {
                 groupsProcessing.delete(uid, options);
+            } else {
+                throw new UnsupportedOperationException("Object " + objectClass.getObjectClassValue() + " is not supported by the connector.");
             }
         } catch (Exception e) {
             LOG.error("Could not delete object, reason: {0}", e.getMessage());
@@ -120,6 +127,10 @@ public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp
                 memberProcessing.update(uid, modifications, options);
             } else if (objectClass.is(GroupsProcessing.OBJECT_CLASS_NAME)) {
                 groupsProcessing.update(uid, modifications, options);
+            } else if (objectClass.is(CollectionsProcessing.OBJECT_CLASS_NAME)) {
+                collectionsProcessing.update(uid, modifications, options);
+            } else {
+                throw new UnsupportedOperationException("Object " + objectClass.getObjectClassValue() + " is not supported by the connector.");
             }
         } catch (Exception e) {
             LOG.error("Could not delete object, reason: {0}", e.getMessage());
@@ -145,6 +156,10 @@ public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp
                 memberProcessing.search(query, handler, options);
             } else if (objectClass.is(GroupsProcessing.OBJECT_CLASS_NAME)) {
                 groupsProcessing.search(query, handler, options);
+            } else if (objectClass.is(CollectionsProcessing.OBJECT_CLASS_NAME)) {
+                collectionsProcessing.search(query, handler, options);
+            } else {
+                throw new UnsupportedOperationException("Object " + objectClass.getObjectClassValue() + " is not supported by the connector.");
             }
         } catch (Exception e) {
             LOG.error("Could not delete object, reason: {0}", e.getMessage());

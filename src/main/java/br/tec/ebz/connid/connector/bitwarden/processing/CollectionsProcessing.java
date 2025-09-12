@@ -1,14 +1,174 @@
 package br.tec.ebz.connid.connector.bitwarden.processing;
 
-import br.tec.ebz.connid.connector.bitwarden.schema.MemberSchemaAttributes;
+import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenAccess;
+import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenCollection;
+import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenListResponse;
+import br.tec.ebz.connid.connector.bitwarden.schema.AccessSchemaAttributes;
+import br.tec.ebz.connid.connector.bitwarden.schema.CollectionSchemaAttributes;
+import br.tec.ebz.connid.connector.bitwarden.services.CollectionsService;
 import org.identityconnectors.common.logging.Log;
+import org.identityconnectors.framework.common.exceptions.UnknownUidException;
 import org.identityconnectors.framework.common.objects.*;
+import org.identityconnectors.framework.common.objects.filter.EqualsFilter;
+import org.identityconnectors.framework.common.objects.filter.Filter;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public class CollectionsProcessing extends ObjectProcessing {
     private static final Log LOG = Log.getLog(CollectionsProcessing.class);
 
     public static final String OBJECT_CLASS_NAME = "collection";
     public static final ObjectClass OBJECT_CLASS = new ObjectClass(OBJECT_CLASS_NAME);
+
+    private final CollectionsService collectionsService;
+
+    public  CollectionsProcessing(CollectionsService collectionsService) {
+        this.collectionsService = collectionsService;
+    }
+
+    public void update(Uid uid, Set<AttributeDelta> modifications, OperationOptions options) {
+        ConnectorObject currentObject = getObject(uid.getUidValue());
+        Set<Attribute> updatedAttributes = updateObjectAttributes(uid, modifications, currentObject);
+        BitwardenCollection collection = translate(updatedAttributes);
+
+        LOG.info("Updated collection {0}", collection);
+        collectionsService.update(uid.getUidValue(), collection);
+        LOG.ok("Collection \"{0}\" updated successfully.", uid.getUidValue());
+    }
+
+    public void delete(Uid uid, OperationOptions options) {
+        collectionsService.delete(uid.getUidValue());
+
+        LOG.ok("Group \"{0}\" deleted successfully", uid.getUidValue());
+    }
+
+    public void search(Filter query, ResultsHandler handler, OperationOptions options) {
+        if (query == null) {
+            searchAll(handler, options);
+        } else {
+            searchByFilter(query, handler, options);
+        }
+    }
+
+    private void searchByFilter(Filter query, ResultsHandler handler, OperationOptions options) {
+        if (query instanceof EqualsFilter equalsFilter) {
+            Attribute attribute = equalsFilter.getAttribute();
+
+            if (attribute != null) {
+                String attributeName = attribute.getName();
+                List<Object> attributeValues = attribute.getValue();
+
+                if (!attributeName.equals(Uid.NAME)) throw new UnsupportedOperationException("Could not search, reason: attribute " + attributeName + " is not supported by search operation");
+
+                if (attributeValues.size() != 1) throw new UnsupportedOperationException("Could not search, reason: search attribute must have only one value. Found " + attributeValues.size());
+                String id = String.valueOf(attributeValues.get(0));
+
+                handler.handle(getObject(id));
+                LOG.ok("Collection with id \"{0}\" was found.", id);
+            }
+        } else {
+            throw new UnsupportedOperationException("Filter " + query + " is not supported.");
+        }
+    }
+
+    private void searchAll(ResultsHandler handler, OperationOptions options) {
+        BitwardenListResponse<BitwardenCollection> collections = collectionsService.list();
+
+        LOG.info("Found {0} collections", collections.getData().size());
+
+        for (BitwardenCollection collection: collections.getData()) {
+            handler.handle(translate(collection));
+        }
+
+    }
+
+    private ConnectorObject getObject(String id) {
+        BitwardenCollection collection = collectionsService.get(id);
+
+        if (collection == null) throw new UnknownUidException("Collection \"" + id + "\" not found.");
+
+        LOG.ok("Found collection \"{0}\"", collection);
+        return translate(collection);
+    }
+
+    private ConnectorObject translate(BitwardenCollection collection) {
+        ConnectorObjectBuilder connectorObject = new ConnectorObjectBuilder();
+        connectorObject.setObjectClass(CollectionsProcessing.OBJECT_CLASS);
+
+        addAttribute(connectorObject, Uid.NAME, collection.getId());
+        addAttribute(connectorObject, Name.NAME, collection.getId());
+        addAttribute(connectorObject, CollectionSchemaAttributes.EXTERNAL_ID, collection.getExternalId());
+
+        List<ConnectorObjectReference> refs = new ArrayList<>();
+        for (BitwardenAccess collectionsAccess: collection.getGroups()) {
+            ConnectorObjectBuilder access = new ConnectorObjectBuilder();
+            access.setObjectClass(AccessProcessing.OBJECT_CLASS);
+
+            addAttribute(access, Uid.NAME, collectionsAccess.getId());
+            addAttribute(access, Name.NAME, collectionsAccess.getId());
+            addAttribute(access, AccessSchemaAttributes.ID, collectionsAccess.getId());
+            addAttribute(access, AccessSchemaAttributes.READ_ONLY, collectionsAccess.getReadOnly());
+            addAttribute(access, AccessSchemaAttributes.HIDE_PASSWORDS, collectionsAccess.getHidePasswords());
+            addAttribute(access, AccessSchemaAttributes.MANAGE, collectionsAccess.getManage());
+
+            refs.add(new ConnectorObjectReference(access.build()));
+        }
+
+        addAttribute(connectorObject, CollectionSchemaAttributes.GROUPS, refs);
+
+        return connectorObject.build();
+    }
+
+    private static BitwardenCollection translate(Set<Attribute> attributes) {
+        String id = getAttributeValue(Uid.NAME, String.class, attributes);
+        String externalId = getAttributeValue(CollectionSchemaAttributes.EXTERNAL_ID, String.class, attributes);
+
+        BitwardenCollection collection = new BitwardenCollection();
+
+        if (id != null) collection.setId(id);
+
+        collection.setExternalId(externalId);
+        collection.setGroups(getAccesses(attributes));
+        collection.setObject("collection");
+
+        return collection;
+    }
+
+    private static List<BitwardenAccess> getAccesses(Set<Attribute> attributes) {
+        AttributesAccessor accessor = new AttributesAccessor(attributes);
+
+        List<BitwardenAccess> accesses = new ArrayList<>();
+        Attribute collections = accessor.find(CollectionSchemaAttributes.GROUPS);
+
+        if (collections != null && collections.getValue() != null) {
+            for (Object v : collections.getValue()) {
+                ConnectorObjectReference ref = (ConnectorObjectReference) v;
+                accesses.add(fromRef(ref));
+            }
+        }
+
+        return accesses;
+    }
+
+    private static BitwardenAccess fromRef(ConnectorObjectReference ref) {
+        BaseConnectorObject embedded = ref.getValue();
+        AttributesAccessor acc = new AttributesAccessor(embedded.getAttributes());
+
+        String collectionId = acc.findString(AccessSchemaAttributes.ID);
+        Boolean readOnly= acc.findBoolean(AccessSchemaAttributes.READ_ONLY);
+        Boolean hidePasswords = acc.findBoolean(AccessSchemaAttributes.HIDE_PASSWORDS);
+        Boolean manage = acc.findBoolean(AccessSchemaAttributes.MANAGE);
+
+        BitwardenAccess access = new BitwardenAccess();
+        access.setId(collectionId);
+        access.setReadOnly(readOnly != null ? readOnly : Boolean.FALSE);
+        access.setHidePassword(hidePasswords != null ? hidePasswords : Boolean.FALSE);
+        access.setManage(manage != null ? manage : Boolean.FALSE);;
+
+        return access;
+    }
 
     public ObjectClassInfo schema() {
         ObjectClassInfoBuilder objectClassInfoBuilder = new ObjectClassInfoBuilder();
@@ -18,7 +178,7 @@ public class CollectionsProcessing extends ObjectProcessing {
                 buildAttributeInfo(
                         Uid.NAME,
                         String.class,
-                        MemberSchemaAttributes.ID,
+                        CollectionSchemaAttributes.ID,
                         AttributeInfo.Flags.REQUIRED,
                         AttributeInfo.Flags.NOT_UPDATEABLE
                 )
@@ -28,10 +188,29 @@ public class CollectionsProcessing extends ObjectProcessing {
                 buildAttributeInfo(
                         Name.NAME,
                         String.class,
-                        MemberSchemaAttributes.EMAIL,
+                        null,
                         AttributeInfo.Flags.REQUIRED
                 )
         );
+
+        objectClassInfoBuilder.addAttributeInfo(
+                buildAttributeInfo(
+                        CollectionSchemaAttributes.EXTERNAL_ID,
+                        String.class,
+                        null
+                )
+        );
+
+        AttributeInfo collectionsRef =
+                new AttributeInfoBuilder(CollectionSchemaAttributes.GROUPS)
+                        .setType(org.identityconnectors.framework.common.objects.ConnectorObjectReference.class)
+                        .setReferencedObjectClassName(AccessProcessing.OBJECT_CLASS_NAME)
+                        .setSubtype("collection-group")
+                        .setRoleInReference("subject")
+                        .setMultiValued(true)
+                        .build();
+
+        objectClassInfoBuilder.addAttributeInfo(collectionsRef);
 
         return objectClassInfoBuilder.build();
     }
