@@ -1,5 +1,6 @@
 package br.tec.ebz.connid.connector.bitwarden.processing;
 
+import br.tec.ebz.connid.connector.bitwarden.utils.AttributeValueNormalizer;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.common.security.GuardedString;
 import org.identityconnectors.framework.common.exceptions.InvalidAttributeValueException;
@@ -7,6 +8,7 @@ import org.identityconnectors.framework.common.exceptions.UnknownUidException;
 import org.identityconnectors.framework.common.objects.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class ObjectProcessing {
     private static final Log LOG = Log.getLog(ObjectProcessing.class);
@@ -122,20 +124,24 @@ public abstract class ObjectProcessing {
             attrsToRemove.forEach(newAttr -> {
 
                 Attribute oldAttr = AttributeUtil.find(newAttr.getName(), processedAttrs);
+                if (oldAttr == null) return;
 
-                if (oldAttr != null) {
+                List<Object> current = new ArrayList<>(Optional.ofNullable(oldAttr.getValue())
+                        .orElseGet(List::of));
 
-                    List values = new ArrayList();
+                List<Object> toRemove = new ArrayList<>(Optional.ofNullable(newAttr.getValue())
+                        .orElseGet(List::of));
 
-                    if (oldAttr.getValue() != null) {
+                Set<Object> removeKeys = toRemove.stream()
+                        .map(AttributeValueNormalizer::keyOf)
+                        .collect(Collectors.toSet());
 
-                        values.addAll(oldAttr.getValue());
-                    }
+                List<Object> filtered = current.stream()
+                        .filter(v -> !removeKeys.contains(AttributeValueNormalizer.keyOf(v)))
+                        .collect(Collectors.toList());
 
-                    values.removeAll(newAttr.getValue());
-                    processedAttrs.remove(oldAttr);
-                    processedAttrs.add(AttributeBuilder.build(oldAttr.getName(), values));
-                }
+                processedAttrs.remove(oldAttr);
+                processedAttrs.add(AttributeBuilder.build(oldAttr.getName(), filtered));
             });
         }
 

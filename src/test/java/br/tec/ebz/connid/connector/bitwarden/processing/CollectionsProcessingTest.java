@@ -65,4 +65,56 @@ class CollectionsProcessingTest extends BitwardenConfigurationHandler {
         facade.updateDelta(CollectionsProcessing.OBJECT_CLASS, uid, deltaAttributes, null);
     }
 
+    @Test
+    void should_add_a_new_group_into_a_collection() {
+        ConnectorFacade facade = getTestConnection();
+        Uid uid = new Uid(COLLECTION_ID);
+
+        ConnectorObjectBuilder updatedCollectionAccess = new ConnectorObjectBuilder()
+                .setObjectClass(new ObjectClass(AccessProcessing.OBJECT_CLASS_NAME))
+                .addAttribute(AttributeBuilder.build(Uid.NAME, "208bcdb6-1746-426d-a777-b345012dbc53"))
+                .addAttribute(AttributeBuilder.build(Name.NAME, "208bcdb6-1746-426d-a777-b345012dbc53"))
+                .addAttribute(AttributeBuilder.build("id", "208bcdb6-1746-426d-a777-b345012dbc53"))
+                .addAttribute(AttributeBuilder.build("readOnly",      true))
+                .addAttribute(AttributeBuilder.build("hidePasswords", true))
+                .addAttribute(AttributeBuilder.build("manage",        false));
+
+        ConnectorObjectReference ref2 = new ConnectorObjectReference(updatedCollectionAccess.build());
+
+        Set<AttributeDelta> deltaAttributes = new HashSet<AttributeDelta>();
+        AttributeDeltaBuilder builder = new AttributeDeltaBuilder();
+        builder.setName(CollectionSchemaAttributes.GROUPS);
+        builder.addValueToAdd(ref2);
+
+        deltaAttributes.add(builder.build());
+
+        facade.updateDelta(CollectionsProcessing.OBJECT_CLASS, uid, deltaAttributes, null);
+    }
+
+    @Test
+    void should_delete_group_into_a_collection() {
+        ConnectorFacade facade = getTestConnection();
+        Uid uid = new Uid(COLLECTION_ID);
+
+        ConnectorObjectBuilder updatedCollectionAccess = new ConnectorObjectBuilder()
+                .setObjectClass(new ObjectClass(AccessProcessing.OBJECT_CLASS_NAME))
+                .addAttribute(AttributeBuilder.build(Uid.NAME, "208bcdb6-1746-426d-a777-b345012dbc53"))
+                .addAttribute(AttributeBuilder.build(Name.NAME, "208bcdb6-1746-426d-a777-b345012dbc53"))
+                .addAttribute(AttributeBuilder.build("id", "208bcdb6-1746-426d-a777-b345012dbc53"))
+                .addAttribute(AttributeBuilder.build("readOnly",      true))
+                .addAttribute(AttributeBuilder.build("hidePasswords", true))
+                .addAttribute(AttributeBuilder.build("manage",        false));
+
+        ConnectorObjectReference ref2 = new ConnectorObjectReference(updatedCollectionAccess.build());
+
+        Set<AttributeDelta> deltaAttributes = new HashSet<AttributeDelta>();
+        AttributeDeltaBuilder builder = new AttributeDeltaBuilder();
+        builder.setName(CollectionSchemaAttributes.GROUPS);
+        builder.addValueToRemove(ref2);
+
+        deltaAttributes.add(builder.build());
+
+        facade.updateDelta(CollectionsProcessing.OBJECT_CLASS, uid, deltaAttributes, null);
+    }
+
 }
