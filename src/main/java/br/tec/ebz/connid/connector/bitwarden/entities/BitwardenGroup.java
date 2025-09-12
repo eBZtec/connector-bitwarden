@@ -8,7 +8,7 @@ public class BitwardenGroup {
     private String object;
     private String name;
     private String externalId;
-    private List<BitwardenCollectionsAccess> collections;
+    private List<BitwardenAccess> collections;
     private List<String> members;
 
     public String getId() {
@@ -43,11 +43,11 @@ public class BitwardenGroup {
         this.externalId = externalId;
     }
 
-    public List<BitwardenCollectionsAccess> getCollections() {
+    public List<BitwardenAccess> getCollections() {
         return collections;
     }
 
-    public void setCollections(List<BitwardenCollectionsAccess> collections) {
+    public void setCollections(List<BitwardenAccess> collections) {
         this.collections = collections;
     }
 

@@ -2,7 +2,7 @@ package br.tec.ebz.connid.connector.bitwarden.entities;
 
 import java.util.Objects;
 
-public class BitwardenCollectionsAccess {
+public class BitwardenAccess {
     private String id;
     private Boolean readOnly;
     private Boolean hidePasswords;
@@ -42,7 +42,7 @@ public class BitwardenCollectionsAccess {
 
     @Override
     public final boolean equals(Object o) {
-        if (!(o instanceof BitwardenCollectionsAccess that)) return false;
+        if (!(o instanceof BitwardenAccess that)) return false;
 
         return getId().equals(that.getId()) && Objects.equals(getReadOnly(), that.getReadOnly()) && Objects.equals(getHidePasswords(), that.getHidePasswords()) && Objects.equals(getManage(), that.getManage());
     }
