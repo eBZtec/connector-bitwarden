@@ -107,7 +107,7 @@ public class CollectionsProcessing extends ObjectProcessing {
         List<ConnectorObjectReference> refs = new ArrayList<>();
         for (BitwardenAccess collectionsAccess: collection.getGroups()) {
             ConnectorObjectBuilder access = new ConnectorObjectBuilder();
-            access.setObjectClass(AccessProcessing.OBJECT_CLASS);
+            access.setObjectClass(GroupsProcessing.ACCESS_OBJECT_CLASS);
 
             addAttribute(access, Uid.NAME, collectionsAccess.getId());
             addAttribute(access, Name.NAME, collectionsAccess.getId());
@@ -209,7 +209,7 @@ public class CollectionsProcessing extends ObjectProcessing {
                         .setType(org.identityconnectors.framework.common.objects.ConnectorObjectReference.class)
                         .setReferencedObjectClassName(CollectionsProcessing.ACCESS_CLASS_NAME)
                         .setSubtype("collection-group")
-                        .setRoleInReference("object")
+                        .setRoleInReference(AttributeUtil.createSpecialName("SUBJECT"))
                         .setMultiValued(true)
                         .build();
 
