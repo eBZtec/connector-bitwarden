@@ -173,6 +173,8 @@ public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp
 
         schemaBuilder.defineObjectClass(memberProcessing.schema());
         schemaBuilder.defineObjectClass(AccessProcessing.schema());
+        schemaBuilder.defineObjectClass(groupsProcessing.schema());
+        schemaBuilder.defineObjectClass(collectionsProcessing.schema());
 
         return schemaBuilder.build();
     }
