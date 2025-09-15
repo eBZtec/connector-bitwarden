@@ -22,6 +22,9 @@ public class CollectionsProcessing extends ObjectProcessing {
     public static final String OBJECT_CLASS_NAME = "collection";
     public static final ObjectClass OBJECT_CLASS = new ObjectClass(OBJECT_CLASS_NAME);
 
+    public static final String ACCESS_CLASS_NAME = "GROUP_ACCESS";
+    public static final ObjectClass ACCESS_OBJECT_CLASS = new ObjectClass(ACCESS_CLASS_NAME);
+
     private final CollectionsService collectionsService;
 
     public  CollectionsProcessing(CollectionsService collectionsService) {
@@ -204,9 +207,9 @@ public class CollectionsProcessing extends ObjectProcessing {
         AttributeInfo collectionsRef =
                 new AttributeInfoBuilder(CollectionSchemaAttributes.GROUPS)
                         .setType(org.identityconnectors.framework.common.objects.ConnectorObjectReference.class)
-                        .setReferencedObjectClassName(AccessProcessing.OBJECT_CLASS_NAME)
+                        .setReferencedObjectClassName(CollectionsProcessing.ACCESS_CLASS_NAME)
                         .setSubtype("collection-group")
-                        .setRoleInReference("subject")
+                        .setRoleInReference("object")
                         .setMultiValued(true)
                         .build();
 

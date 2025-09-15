@@ -5,7 +5,6 @@ import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenGroup;
 import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenListResponse;
 import br.tec.ebz.connid.connector.bitwarden.schema.AccessSchemaAttributes;
 import br.tec.ebz.connid.connector.bitwarden.schema.GroupSchemaAttributes;
-import br.tec.ebz.connid.connector.bitwarden.schema.MemberSchemaAttributes;
 import br.tec.ebz.connid.connector.bitwarden.services.GroupsService;
 import br.tec.ebz.connid.connector.bitwarden.services.MembersService;
 import org.identityconnectors.common.logging.Log;
@@ -25,6 +24,9 @@ public class GroupsProcessing extends ObjectProcessing{
 
     public static final String OBJECT_CLASS_NAME = "group";
     public static final ObjectClass OBJECT_CLASS = new ObjectClass(OBJECT_CLASS_NAME);
+
+    public static final String ACCESS_CLASS_NAME = "COLLECTION_ACCESS";
+    public static final ObjectClass ACCESS_OBJECT_CLASS = new ObjectClass(ACCESS_CLASS_NAME);
 
     public static final String COLLECTION_ACCESS_CLASS_NAME = "collection_access";
 
@@ -253,9 +255,9 @@ public class GroupsProcessing extends ObjectProcessing{
         AttributeInfo collectionsRef =
                 new AttributeInfoBuilder(GroupSchemaAttributes.COLLECTIONS)
                         .setType(org.identityconnectors.framework.common.objects.ConnectorObjectReference.class)
-                        .setReferencedObjectClassName(AccessProcessing.OBJECT_CLASS_NAME)
+                        .setReferencedObjectClassName(ACCESS_CLASS_NAME)
                         .setSubtype("group-collection")
-                        .setRoleInReference("subject")
+                        .setRoleInReference("object")
                         .setMultiValued(true)
                         .build();
 

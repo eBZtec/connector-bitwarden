@@ -45,7 +45,7 @@ class CollectionsProcessingTest extends BitwardenConfigurationHandler {
         Uid uid = new Uid(COLLECTION_ID);
 
         ConnectorObjectBuilder updatedCollectionAccess = new ConnectorObjectBuilder()
-                .setObjectClass(new ObjectClass(AccessProcessing.OBJECT_CLASS_NAME))
+                .setObjectClass(new ObjectClass(GroupsProcessing.ACCESS_CLASS_NAME))
                 .addAttribute(AttributeBuilder.build(Uid.NAME, "c553777c-74db-4ca6-b8ed-b3550159518c"))
                 .addAttribute(AttributeBuilder.build(Name.NAME, "c553777c-74db-4ca6-b8ed-b3550159518c"))
                 .addAttribute(AttributeBuilder.build("id", "c553777c-74db-4ca6-b8ed-b3550159518c"))
@@ -71,7 +71,7 @@ class CollectionsProcessingTest extends BitwardenConfigurationHandler {
         Uid uid = new Uid(COLLECTION_ID);
 
         ConnectorObjectBuilder updatedCollectionAccess = new ConnectorObjectBuilder()
-                .setObjectClass(new ObjectClass(AccessProcessing.OBJECT_CLASS_NAME))
+                .setObjectClass(new ObjectClass(GroupsProcessing.ACCESS_CLASS_NAME))
                 .addAttribute(AttributeBuilder.build(Uid.NAME, "208bcdb6-1746-426d-a777-b345012dbc53"))
                 .addAttribute(AttributeBuilder.build(Name.NAME, "208bcdb6-1746-426d-a777-b345012dbc53"))
                 .addAttribute(AttributeBuilder.build("id", "208bcdb6-1746-426d-a777-b345012dbc53"))
@@ -97,7 +97,7 @@ class CollectionsProcessingTest extends BitwardenConfigurationHandler {
         Uid uid = new Uid(COLLECTION_ID);
 
         ConnectorObjectBuilder updatedCollectionAccess = new ConnectorObjectBuilder()
-                .setObjectClass(new ObjectClass(AccessProcessing.OBJECT_CLASS_NAME))
+                .setObjectClass(new ObjectClass(GroupsProcessing.ACCESS_CLASS_NAME))
                 .addAttribute(AttributeBuilder.build(Uid.NAME, "208bcdb6-1746-426d-a777-b345012dbc53"))
                 .addAttribute(AttributeBuilder.build(Name.NAME, "208bcdb6-1746-426d-a777-b345012dbc53"))
                 .addAttribute(AttributeBuilder.build("id", "208bcdb6-1746-426d-a777-b345012dbc53"))

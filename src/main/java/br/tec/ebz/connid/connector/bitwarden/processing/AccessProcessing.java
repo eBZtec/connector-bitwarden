@@ -5,12 +5,9 @@ import org.identityconnectors.framework.common.objects.*;
 
 public class AccessProcessing {
 
-    public static final String OBJECT_CLASS_NAME = "access";
-    public static final ObjectClass OBJECT_CLASS = new ObjectClass(OBJECT_CLASS_NAME);
-
-    public static ObjectClassInfo schema() {
+    public static ObjectClassInfo schema(String type) {
         ObjectClassInfoBuilder accessBld = new ObjectClassInfoBuilder()
-                .setType(AccessProcessing.OBJECT_CLASS_NAME);
+                .setType(type);
         accessBld.setEmbedded(true);
         accessBld.addAttributeInfo(AttributeInfoBuilder.build(Uid.NAME, String.class));
         accessBld.addAttributeInfo(AttributeInfoBuilder.build(Name.NAME, String.class));
