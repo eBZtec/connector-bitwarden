@@ -20,9 +20,15 @@ import br.tec.ebz.connid.connector.bitwarden.processing.AccessProcessing;
 import br.tec.ebz.connid.connector.bitwarden.processing.CollectionsProcessing;
 import br.tec.ebz.connid.connector.bitwarden.processing.GroupsProcessing;
 import br.tec.ebz.connid.connector.bitwarden.processing.MemberProcessing;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.NotAuthorizedException;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.ProcessingException;
+import org.apache.cxf.interceptor.Fault;
+import org.apache.cxf.interceptor.security.AuthenticationException;
 import org.identityconnectors.common.CollectionUtil;
 import org.identityconnectors.common.logging.Log;
-import org.identityconnectors.framework.common.exceptions.ConnectorException;
+import org.identityconnectors.framework.common.exceptions.*;
 import org.identityconnectors.framework.common.objects.*;
 import org.identityconnectors.framework.common.objects.filter.Filter;
 import org.identityconnectors.framework.common.objects.filter.FilterTranslator;
@@ -31,7 +37,11 @@ import org.identityconnectors.framework.spi.Connector;
 import org.identityconnectors.framework.spi.ConnectorClass;
 import org.identityconnectors.framework.spi.operations.*;
 
+import java.io.IOException;
+import java.net.ConnectException;
 import java.net.MalformedURLException;
+import java.net.NoRouteToHostException;
+import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.Set;
 
@@ -64,8 +74,8 @@ public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp
             collectionsProcessing = new CollectionsProcessing(this.connection.getCollectionsService());
 
             LOG.ok("Connector instance initialized successfully.");
-        } catch (MalformedURLException e) {
-            throw new ConnectorException(e);
+        } catch (Exception e) {
+            handleConnectorException(e, e.getMessage());
         }
     }
 
@@ -98,7 +108,7 @@ public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp
             }
         } catch (Exception e) {
             LOG.error("Could not create object, reason: {0}", e.getMessage());
-            throw e;
+            handleConnectorException(e, "Could not create object, reason: " + e.getMessage());
         }
 
         return uid;
@@ -116,7 +126,7 @@ public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp
             }
         } catch (Exception e) {
             LOG.error("Could not delete object, reason: {0}", e.getMessage());
-            throw e;
+            handleConnectorException(e, "Could not delete object, reason: " + e.getMessage());
         }
     }
 
@@ -133,8 +143,8 @@ public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp
                 throw new UnsupportedOperationException("Object " + objectClass.getObjectClassValue() + " is not supported by the connector.");
             }
         } catch (Exception e) {
-            LOG.error("Could not delete object, reason: {0}", e.getMessage());
-            throw e;
+            LOG.error("Could not update object, reason: {0}", e.getMessage());
+            handleConnectorException(e, "Could not update object, reason: " + e.getMessage());
         }
         return Set.of();
     }
@@ -162,8 +172,8 @@ public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp
                 throw new UnsupportedOperationException("Object " + objectClass.getObjectClassValue() + " is not supported by the connector.");
             }
         } catch (Exception e) {
-            LOG.error("Could not delete object, reason: {0}", e.getMessage());
-            throw e;
+            LOG.error("Could not search object, reason: {0}", e.getMessage());
+            handleConnectorException(e, "Could not search object, reason: " + e.getMessage());
         }
     }
 
@@ -178,5 +188,44 @@ public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp
         schemaBuilder.defineObjectClass(collectionsProcessing.schema());
 
         return schemaBuilder.build();
+    }
+
+    private static void handleConnectorException(Exception e, String message) {
+        if (e instanceof UnsupportedOperationException) {
+            throw new UnsupportedOperationException(message);
+        }
+
+        if (e instanceof Fault || e instanceof ProcessingException) {
+            throw new ConnectionFailedException(message + ", reason: " + e.getMessage(), e);
+        }
+
+        if (e instanceof UnknownUidException || e instanceof NotFoundException) {
+            throw new UnknownUidException(e.getMessage() + ", " + message);
+        }
+
+        if (e instanceof BadRequestException ex) {
+            throw new InvalidAttributeValueException(message + ". Status code response: " + ex.getResponse().getStatus() + ", response: " + ex.getMessage());
+        }
+
+        if (e instanceof MalformedURLException) {
+            throw new ConfigurationException(message + ", " + e.getMessage());
+        }
+
+        if (e instanceof ConnectException) {
+            throw new ConnectorException(message);
+        }
+
+        if (e instanceof IOException) {
+            if ((e instanceof SocketTimeoutException || e instanceof NoRouteToHostException)) {
+                throw new OperationTimeoutException(message + ", timeout occured, reason: " + e.getMessage(), e);
+            }
+
+            throw new ConnectorIOException(message + " IO exception occcured, reason: " + e.getMessage(), e);
+        }
+
+        if (e instanceof NotAuthorizedException ex) {
+            throw new InvalidCredentialException(message + ". Cause: " + ex.getMessage());
+        }
+
     }
 }

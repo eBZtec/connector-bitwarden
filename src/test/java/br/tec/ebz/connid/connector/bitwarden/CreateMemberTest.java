@@ -3,6 +3,7 @@ package br.tec.ebz.connid.connector.bitwarden;
 import br.tec.ebz.connid.connector.bitwarden.processing.MemberProcessing;
 import br.tec.ebz.connid.connector.bitwarden.schema.MemberSchemaAttributes;
 import org.identityconnectors.framework.api.ConnectorFacade;
+import org.identityconnectors.framework.common.exceptions.InvalidAttributeValueException;
 import org.identityconnectors.framework.common.objects.Attribute;
 import org.identityconnectors.framework.common.objects.AttributeBuilder;
 import org.identityconnectors.framework.common.objects.Name;
@@ -53,5 +54,26 @@ public class CreateMemberTest extends BitwardenConfigurationHandler{
         assertNotNull(uid, "Uid cannot be null");
 
         facade.delete(MemberProcessing.OBJECT_CLASS, uid, null);
+    }
+
+    @Test
+    void should_throw_exception_when_type_is_not_set() {
+        ConnectorFacade facade = getTestConnection();
+
+        Set<Attribute> attributes = new HashSet<>();
+
+        attributes.add(AttributeBuilder.build(Name.NAME, email));
+        attributes.add(AttributeBuilder.build(MemberSchemaAttributes.NAME, name));
+        attributes.add(AttributeBuilder.build(MemberSchemaAttributes.TWO_FACTOR_ENABLED, false));
+        attributes.add(AttributeBuilder.build(MemberSchemaAttributes.STATUS, 0));
+        attributes.add(AttributeBuilder.build(MemberSchemaAttributes.RESET_PASSWORD_ENROLLED, false));
+        attributes.add(AttributeBuilder.build(MemberSchemaAttributes.SSO_EXTERNAL_ID, login));
+        attributes.add(AttributeBuilder.build(MemberSchemaAttributes.GROUPS, new ArrayList<>()));
+
+        assertThrows(InvalidAttributeValueException.class, () -> {
+            Uid uid = facade.create(MemberProcessing.OBJECT_CLASS, attributes, null);
+        });
+
+
     }
 }
