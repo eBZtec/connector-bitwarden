@@ -58,11 +58,9 @@ public class BitwardenAccess {
 
     @Override
     public String toString() {
-        return "BitwardenCollections{" +
-                "id='" + id + '\'' +
-                ", readOnly=" + readOnly +
-                ", hidePasswords=" + hidePasswords +
-                ", manage=" + manage +
-                '}';
+        return "id=" + id +
+                ";ro=" + (readOnly ? "1" : "0") +
+                ";hp=" + (hidePasswords ? "1" : "0") +
+                ";mg=" + (manage ? "1" : "0");
     }
 }

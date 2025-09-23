@@ -104,23 +104,6 @@ public class CollectionsProcessing extends ObjectProcessing {
         addAttribute(connectorObject, Name.NAME, collection.getId());
         addAttribute(connectorObject, CollectionSchemaAttributes.EXTERNAL_ID, collection.getExternalId());
 
-        List<ConnectorObjectReference> refs = new ArrayList<>();
-        for (BitwardenAccess collectionsAccess: collection.getGroups()) {
-            ConnectorObjectBuilder access = new ConnectorObjectBuilder();
-            access.setObjectClass(GroupsProcessing.ACCESS_OBJECT_CLASS);
-
-            addAttribute(access, Uid.NAME, collectionsAccess.getId());
-            addAttribute(access, Name.NAME, collectionsAccess.getId());
-            addAttribute(access, AccessSchemaAttributes.ID, collectionsAccess.getId());
-            addAttribute(access, AccessSchemaAttributes.READ_ONLY, collectionsAccess.getReadOnly());
-            addAttribute(access, AccessSchemaAttributes.HIDE_PASSWORDS, collectionsAccess.getHidePasswords());
-            addAttribute(access, AccessSchemaAttributes.MANAGE, collectionsAccess.getManage());
-
-            refs.add(new ConnectorObjectReference(access.build()));
-        }
-
-        addAttribute(connectorObject, CollectionSchemaAttributes.GROUPS, refs);
-
         return connectorObject.build();
     }
 
@@ -133,44 +116,9 @@ public class CollectionsProcessing extends ObjectProcessing {
         if (id != null) collection.setId(id);
 
         collection.setExternalId(externalId);
-        collection.setGroups(getAccesses(attributes));
         collection.setObject("collection");
 
         return collection;
-    }
-
-    private static List<BitwardenAccess> getAccesses(Set<Attribute> attributes) {
-        AttributesAccessor accessor = new AttributesAccessor(attributes);
-
-        List<BitwardenAccess> accesses = new ArrayList<>();
-        Attribute collections = accessor.find(CollectionSchemaAttributes.GROUPS);
-
-        if (collections != null && collections.getValue() != null) {
-            for (Object v : collections.getValue()) {
-                ConnectorObjectReference ref = (ConnectorObjectReference) v;
-                accesses.add(fromRef(ref));
-            }
-        }
-
-        return accesses;
-    }
-
-    private static BitwardenAccess fromRef(ConnectorObjectReference ref) {
-        BaseConnectorObject embedded = ref.getValue();
-        AttributesAccessor acc = new AttributesAccessor(embedded.getAttributes());
-
-        String collectionId = acc.findString(AccessSchemaAttributes.ID);
-        Boolean readOnly= acc.findBoolean(AccessSchemaAttributes.READ_ONLY);
-        Boolean hidePasswords = acc.findBoolean(AccessSchemaAttributes.HIDE_PASSWORDS);
-        Boolean manage = acc.findBoolean(AccessSchemaAttributes.MANAGE);
-
-        BitwardenAccess access = new BitwardenAccess();
-        access.setId(collectionId);
-        access.setReadOnly(readOnly != null ? readOnly : Boolean.FALSE);
-        access.setHidePassword(hidePasswords != null ? hidePasswords : Boolean.FALSE);
-        access.setManage(manage != null ? manage : Boolean.FALSE);;
-
-        return access;
     }
 
     public ObjectClassInfo schema() {
@@ -203,17 +151,6 @@ public class CollectionsProcessing extends ObjectProcessing {
                         null
                 )
         );
-
-        AttributeInfo collectionsRef =
-                new AttributeInfoBuilder(CollectionSchemaAttributes.GROUPS)
-                        .setType(org.identityconnectors.framework.common.objects.ConnectorObjectReference.class)
-                        .setReferencedObjectClassName(CollectionsProcessing.ACCESS_CLASS_NAME)
-                        .setSubtype("collection-group")
-                        .setRoleInReference(AttributeUtil.createSpecialName("SUBJECT"))
-                        .setMultiValued(true)
-                        .build();
-
-        objectClassInfoBuilder.addAttributeInfo(collectionsRef);
 
         return objectClassInfoBuilder.build();
     }
