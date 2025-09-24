@@ -1,0 +1,375 @@
+<resource xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3" xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3" xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3" xmlns:org="http://midpoint.evolveum.com/xml/ns/public/common/org-3" xmlns:q="http://prism.evolveum.com/xml/ns/public/query-3" xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3" xmlns:t="http://prism.evolveum.com/xml/ns/public/types-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" oid="089d0c9a-9938-48c7-a36f-3dc78a520b82">
+    <name>Bitwarden</name>
+    <lifecycleState>active</lifecycleState>
+    <connectorRef oid="862d2189-bb50-47e7-bc2e-be19802b022b" relation="org:default" type="c:ConnectorType">
+        <!-- ConnId br.tec.ebz.connid.connector.bitwarden.BitwardenConnector v1.0.12-SNAPSHOT -->
+    </connectorRef>
+    <connectorConfiguration xmlns:icfc="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/connector-schema-3">
+        <icfc:configurationProperties xmlns:cfg="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/bundle/br.tec.ebz.connid.connector.connector-bitwarden/br.tec.ebz.connid.connector.bitwarden.BitwardenConnector">
+            <cfg:hostUrl xmlns="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/bundle/br.tec.ebz.connid.connector.connector-bitwarden/br.tec.ebz.connid.connector.bitwarden.BitwardenConnector" xmlns:s="http://midpoint.evolveum.com/xml/ns/public/model/scripting-3">https://api.bitwarden.com</cfg:hostUrl>
+            <cfg:authUrl xmlns="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/bundle/br.tec.ebz.connid.connector.connector-bitwarden/br.tec.ebz.connid.connector.bitwarden.BitwardenConnector" xmlns:s="http://midpoint.evolveum.com/xml/ns/public/model/scripting-3">https://identity.bitwarden.com</cfg:authUrl>
+            <cfg:clientId></cfg:clientId>
+
+        </icfc:configurationProperties>
+    </connectorConfiguration>
+    <schemaHandling>
+        <objectType id="5">
+            <kind>account</kind>
+            <intent>default</intent>
+            <displayName>Biwarden Member</displayName>
+            <lifecycleState>active</lifecycleState>
+            <default>true</default>
+            <delineation>
+                <objectClass>ri:member</objectClass>
+            </delineation>
+            <focus>
+                <type>c:UserType</type>
+            </focus>
+            <attribute id="205">
+                <ref>ri:email</ref>
+                <outbound>
+                    <name>outbound-emailAddress-email</name>
+                    <strength>strong</strength>
+                    <source>
+                        <path>emailAddress</path>
+                    </source>
+                </outbound>
+                <inbound id="206">
+                    <name>inbound-email-emailAddress</name>
+                    <strength>weak</strength>
+                    <target>
+                        <path>emailAddress</path>
+                    </target>
+                    <use>correlation</use>
+                </inbound>
+            </attribute>
+            <attribute id="207">
+                <ref>ri:groups</ref>
+                <inbound id="208">
+                    <name>inbound-groups-assignments</name>
+                    <authoritative>true</authoritative>
+                    <strength>strong</strength>
+                    <expression>
+                        <script>
+                            <code>
+                                import javax.xml.namespace.QName;
+                                import com.evolveum.midpoint.xml.ns._public.common.common_3.*;
+                                import com.evolveum.midpoint.prism.*;
+                                import com.evolveum.midpoint.prism.polystring.PolyString;
+
+                                // acontece nos casos de remocao de papel
+                                if (input == null) return null;
+
+                                //def groups = PolyString.fromOrig(input);
+                                def prepared = midpoint.preparedQueryFor(RoleType.class, "identifier = ?");
+                                def query = prepared.bind(input);
+                                def roles = midpoint.searchObjects(query);
+
+                                role = !roles.empty ? roles.get(0) : null;
+
+                                if (role == null) return null;
+
+                                a = new AssignmentType();
+                                roleRef = new ObjectReferenceType();
+                                roleRef.oid = role.oid;
+                                roleRef.type = RoleType.COMPLEX_TYPE;
+                                a.targetRef = roleRef;
+
+                                return a;
+                            </code>
+                        </script>
+                    </expression>
+                    <target>
+                        <path>assignment</path>
+                        <set>
+                            <condition>
+                                <script>
+                                    <code>
+                                        import com.evolveum.midpoint.xml.ns._public.common.common_3.FocusType;
+                                        return input.targetRef != null &amp;&amp; midpoint.getObject(FocusType.class, input.targetRef.oid)?.name?.toString().startsWith("bitwarden:");
+                                    </code>
+                                </script>
+                            </condition>
+                        </set>
+                    </target>
+                    <use>synchronization</use>
+                </inbound>
+            </attribute>
+            <attribute id="218">
+                <ref>ri:externalId</ref>
+                <outbound>
+                    <name>outbound-name-enternalid</name>
+                    <strength>strong</strength>
+                    <source>
+                        <path>name</path>
+                    </source>
+                </outbound>
+            </attribute>
+            <attribute id="220">
+                <ref>ri:status</ref>
+                <outbound>
+                    <name>outbound-status</name>
+                    <strength>weak</strength>
+                    <expression>
+                        <value>0</value>
+                    </expression>
+                </outbound>
+            </attribute>
+            <attribute id="221">
+                <ref>ri:type</ref>
+                <outbound>
+                    <name>outbound-type</name>
+                    <strength>weak</strength>
+                    <expression>
+                        <value>1</value>
+                    </expression>
+                </outbound>
+            </attribute>
+            <activation>
+                <existence>
+                    <outbound id="216">
+                        <name>accounts-exists</name>
+                        <strength>weak</strength>
+                        <expression>
+                            <path>$focusExists</path>
+                        </expression>
+                    </outbound>
+                </existence>
+            </activation>
+            <correlation>
+                <correlators>
+                    <items id="210">
+                        <item id="211">
+                            <ref>emailAddress</ref>
+                        </item>
+                    </items>
+                </correlators>
+            </correlation>
+            <synchronization>
+                <reaction id="198">
+                    <situation>unlinked</situation>
+                    <actions>
+                        <link id="199"/>
+                    </actions>
+                </reaction>
+                <reaction id="200">
+                    <situation>linked</situation>
+                    <actions>
+                        <synchronize id="201">
+                            <synchronize>true</synchronize>
+                            <reconcile>true</reconcile>
+                            <reconcileAll>true</reconcileAll>
+                        </synchronize>
+                    </actions>
+                </reaction>
+                <reaction id="202">
+                    <situation>disputed</situation>
+                    <actions>
+                        <createCorrelationCase id="203"/>
+                    </actions>
+                </reaction>
+            </synchronization>
+        </objectType>
+        <objectType id="7">
+            <kind>entitlement</kind>
+            <intent>default</intent>
+            <displayName>Bitwarden Group</displayName>
+            <lifecycleState>active</lifecycleState>
+            <default>true</default>
+            <delineation>
+                <objectClass>ri:group</objectClass>
+            </delineation>
+            <focus>
+                <type>c:RoleType</type>
+                <archetypeRef oid="0b7b1757-4d7c-4f02-97a6-a6f2abc8d558" relation="org:default" type="c:ArchetypeType">
+                    <!-- Bitwarden Group Archetype -->
+                </archetypeRef>
+            </focus>
+            <attribute id="29">
+                <ref>ri:name</ref>
+                <inbound id="31">
+                    <name>name-to-display-name</name>
+                    <strength>strong</strength>
+                    <expression>
+                        <script>
+                            <code>"Bitwarden: " + input.toString()</code>
+                        </script>
+                    </expression>
+                    <target>
+                        <path>displayName</path>
+                    </target>
+                    <use>synchronization</use>
+                </inbound>
+                <inbound id="57">
+                    <name>name-to-name</name>
+                    <strength>strong</strength>
+                    <expression>
+                        <script>
+                            <code>"bitwarden:" + input.toString()</code>
+                        </script>
+                    </expression>
+                    <target>
+                        <path>name</path>
+                    </target>
+                    <use>synchronization</use>
+                </inbound>
+            </attribute>
+            <attribute id="32">
+                <ref>ri:id</ref>
+                <inbound id="33">
+                    <name>id-to-identifier</name>
+                    <strength>strong</strength>
+                    <target>
+                        <path>identifier</path>
+                    </target>
+                    <use>all</use>
+                </inbound>
+            </attribute>
+            <attribute id="232">
+                <ref>ri:collections</ref>
+                <outbound>
+                    <name>outbound-collections-collections</name>
+                    <strength>strong</strength>
+                    <source>
+                        <path>extension/collections</path>
+                    </source>
+                </outbound>
+                <inbound id="233">
+                    <name>collections-to-collections</name>
+                    <strength>strong</strength>
+                    <target>
+                        <path>extension/collections</path>
+                    </target>
+                </inbound>
+            </attribute>
+            <correlation>
+                <correlators>
+                    <items id="35">
+                        <enabled>true</enabled>
+                        <item id="36">
+                            <ref>identifier</ref>
+                        </item>
+                    </items>
+                </correlators>
+            </correlation>
+            <synchronization>
+                <reaction id="22">
+                    <situation>unmatched</situation>
+                    <actions>
+                        <addFocus id="23"/>
+                    </actions>
+                </reaction>
+                <reaction id="24">
+                    <situation>linked</situation>
+                    <actions>
+                        <synchronize id="25"/>
+                    </actions>
+                </reaction>
+                <reaction id="26">
+                    <situation>deleted</situation>
+                    <actions>
+                        <deleteFocus id="27"/>
+                    </actions>
+                </reaction>
+                <reaction id="235">
+                    <situation>unlinked</situation>
+                    <actions>
+                        <link id="236"/>
+                    </actions>
+                </reaction>
+            </synchronization>
+        </objectType>
+        <objectType id="9">
+            <kind>generic</kind>
+            <intent>default</intent>
+            <displayName>Biwarden Collection</displayName>
+            <lifecycleState>active</lifecycleState>
+            <default>true</default>
+            <delineation>
+                <objectClass>ri:collection</objectClass>
+            </delineation>
+            <focus>
+                <type>c:RoleType</type>
+                <archetypeRef oid="122a3c24-a50f-4595-a1b7-847c0d0764de" relation="org:default" type="c:ArchetypeType">
+                    <!-- Bitwarden - default -->
+                </archetypeRef>
+            </focus>
+            <attribute id="51">
+                <ref>ri:id</ref>
+                <inbound id="52">
+                    <name>id-to-name</name>
+                    <strength>strong</strength>
+                    <expression>
+                        <script>
+                            <code>"bitwarden:" + input.toString()</code>
+                        </script>
+                    </expression>
+                    <target>
+                        <path>name</path>
+                    </target>
+                </inbound>
+                <inbound id="53">
+                    <name>id-to-displayname</name>
+                    <strength>strong</strength>
+                    <expression>
+                        <script>
+                            <code>"Bitwarden Collection: " + input.toString()</code>
+                        </script>
+                    </expression>
+                    <target>
+                        <path>displayName</path>
+                    </target>
+                </inbound>
+                <inbound id="54">
+                    <name>id-to-identifier</name>
+                    <strength>strong</strength>
+                    <target>
+                        <path>identifier</path>
+                    </target>
+                </inbound>
+            </attribute>
+            <synchronization>
+                <reaction id="44">
+                    <situation>unmatched</situation>
+                    <actions>
+                        <addFocus id="45"/>
+                    </actions>
+                </reaction>
+                <reaction id="46">
+                    <situation>linked</situation>
+                    <actions>
+                        <synchronize id="47"/>
+                    </actions>
+                </reaction>
+                <reaction id="48">
+                    <situation>deleted</situation>
+                    <actions>
+                        <deleteFocus id="49"/>
+                    </actions>
+                </reaction>
+            </synchronization>
+        </objectType>
+    </schemaHandling>
+    <capabilities>
+
+        <native xmlns:cap="http://midpoint.evolveum.com/xml/ns/public/resource/capabilities-3">
+            <cap:schema/>
+            <cap:references/>
+            <cap:create/>
+            <cap:read>
+                <cap:returnDefaultAttributesOption>false</cap:returnDefaultAttributesOption>
+            </cap:read>
+            <cap:update>
+                <cap:delta>true</cap:delta>
+                <cap:addRemoveAttributeValues>true</cap:addRemoveAttributeValues>
+            </cap:update>
+            <cap:delete/>
+            <cap:testConnection/>
+            <cap:script>
+                <cap:host id="3">
+                    <cap:type>connector</cap:type>
+                </cap:host>
+            </cap:script>
+        </native>
+    </capabilities>
+</resource>

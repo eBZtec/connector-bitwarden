@@ -1,0 +1,56 @@
+<archetype xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3" xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3" xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3" xmlns:org="http://midpoint.evolveum.com/xml/ns/public/common/org-3" xmlns:q="http://prism.evolveum.com/xml/ns/public/query-3" xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3" xmlns:t="http://prism.evolveum.com/xml/ns/public/types-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" oid="0b7b1757-4d7c-4f02-97a6-a6f2abc8d558" version="6">
+    <name>Bitwarden Group Archetype</name>
+    <assignment id="1">
+        <activation>
+            <effectiveStatus>enabled</effectiveStatus>
+        </activation>
+        <assignmentRelation id="5">
+            <holderType>c:RoleType</holderType>
+        </assignmentRelation>
+    </assignment>
+    <iteration>0</iteration>
+    <iterationToken/>
+    <activation>
+        <effectiveStatus>enabled</effectiveStatus>
+    </activation>
+    <inducement id="6">
+        <construction>
+            <strength>weak</strength>
+            <resourceRef oid="089d0c9a-9938-48c7-a36f-3dc78a520b82" relation="org:default" type="c:ResourceType">
+                <!-- Bitwarden -->
+            </resourceRef>
+            <attribute id="10">
+                <ref>ri:groups</ref>
+                <outbound>
+                    <strength>strong</strength>
+                    <source>
+                        <path>$immediateRole/identifier</path>
+                    </source>
+                    <expression>
+                        <script>
+                            <code>
+                                return identifier
+                            </code>
+                        </script>
+                    </expression>
+                </outbound>
+            </attribute>
+        </construction>
+        <order>2</order>
+        <focusType>c:UserType</focusType>
+    </inducement>
+    <archetypePolicy>
+        <display>
+            <label>Bitwarden Group</label>
+            <singularLabel>Bitwarden Group</singularLabel>
+            <pluralLabel>Bitwarden Groups</pluralLabel>
+            <icon>
+                <cssClass>fa-solid fa-user-group</cssClass>
+                <color>#0077b6</color>
+            </icon>
+        </display>
+    </archetypePolicy>
+    <superArchetypeRef oid="00000000-0000-0000-0000-000000000328" relation="org:default" type="c:ArchetypeType">
+        <!-- Application role -->
+    </superArchetypeRef>
+</archetype>
