@@ -99,6 +99,12 @@ mvn clean install -DskipTests=true
 
 ### Installation
 
+* Add the [ISRG Root X1 certificate](https://letsencrypt.org/certs/isrgrootx1.pem)  to the Midpoint keystore, if you're using Cloud hosted Bitwarden.
+
+```sh
+keytool -importcert -trustcacerts -alias isrg-root-x1 -file isrgrootx1.crt -keystore /opt/midpoint/var/keystore.jceks -storepass changeit
+```
+
 * Copy/move connector-bitwarden-{version}.jar to ```{midPoint_home}/connid-connectors/``` directory
 
 ### Run tests
