@@ -8,8 +8,6 @@ import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 import jakarta.ws.rs.core.Form;
 import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.Response;
-import org.apache.cxf.interceptor.LoggingInInterceptor;
-import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.jaxrs.client.ClientConfiguration;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactoryBean;
 import org.apache.cxf.jaxrs.client.WebClient;
@@ -18,7 +16,6 @@ import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConnectionFailedException;
 
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
@@ -27,17 +24,16 @@ public abstract class ApiConnectionHandler {
     private static final Log LOG = Log.getLog(ApiConnectionHandler.class);
     private static final String AUTH_URL = "/connect/token";
 
-    private BitwardenConfiguration configuration;
+    private final BitwardenConfiguration configuration;
 
     private String token;
-    private Integer expiresIn;
 
-    public ApiConnectionHandler(BitwardenConfiguration configuration) throws MalformedURLException {
+    public ApiConnectionHandler(BitwardenConfiguration configuration) {
         this.configuration = configuration;
         fetchToken();
     }
 
-    protected <T> T setupClient(Class<T> type) throws MalformedURLException {
+    protected <T> T setupClient(Class<T> type) {
         JAXRSClientFactoryBean bean = new JAXRSClientFactoryBean();
         bean.setResourceClass(type);
         bean.setAddress(this.configuration.getHostUrl());
@@ -50,8 +46,6 @@ public abstract class ApiConnectionHandler {
         provider.setMapper(mapper);
 
         bean.setProvider(provider);
-//        bean.getInInterceptors().add(new LoggingInInterceptor());
-//        bean.getOutInterceptors().add(new LoggingOutInterceptor());
         bean.getOutInterceptors().add(new BearerAuthInterceptor(getAccessToken()));
 
         T proxy = bean.create(type);
@@ -67,7 +61,7 @@ public abstract class ApiConnectionHandler {
         return proxy;
     }
 
-    private void fetchToken() throws MalformedURLException {
+    private void fetchToken() {
         URI baseUri = URI.create(configuration.getAuthUrl());
         URI resolvedUri = baseUri.resolve(AUTH_URL);
 
@@ -100,12 +94,7 @@ public abstract class ApiConnectionHandler {
 
         Map<String, Object> responseBody = response.readEntity(new GenericType<>() {});
 
-        String accessToken = (String) responseBody.getOrDefault("access_token", responseBody.get("token"));
-        Number exp = (Number) responseBody.getOrDefault("expires_in", responseBody.get("expiresIn"));
-
-        token = accessToken;
-        expiresIn = exp != null ? exp.intValue() : null;
-
+        token = (String) responseBody.getOrDefault("access_token", responseBody.get("token"));
     }
 
     private String getAccessToken() {
