@@ -3,11 +3,9 @@ package br.tec.ebz.connid.connector.bitwarden.processing;
 import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenAccess;
 import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenCollection;
 import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenListResponse;
-import br.tec.ebz.connid.connector.bitwarden.schema.AccessSchemaAttributes;
 import br.tec.ebz.connid.connector.bitwarden.schema.CollectionSchemaAttributes;
 import br.tec.ebz.connid.connector.bitwarden.services.CollectionsService;
 import org.identityconnectors.common.logging.Log;
-import org.identityconnectors.framework.common.exceptions.UnknownUidException;
 import org.identityconnectors.framework.common.objects.*;
 import org.identityconnectors.framework.common.objects.filter.EqualsFilter;
 import org.identityconnectors.framework.common.objects.filter.Filter;
@@ -21,9 +19,6 @@ public class CollectionsProcessing extends ObjectProcessing {
 
     public static final String OBJECT_CLASS_NAME = "collection";
     public static final ObjectClass OBJECT_CLASS = new ObjectClass(OBJECT_CLASS_NAME);
-
-    public static final String ACCESS_CLASS_NAME = "GROUP_ACCESS";
-    public static final ObjectClass ACCESS_OBJECT_CLASS = new ObjectClass(ACCESS_CLASS_NAME);
 
     private final CollectionsService collectionsService;
 
@@ -59,18 +54,16 @@ public class CollectionsProcessing extends ObjectProcessing {
         if (query instanceof EqualsFilter equalsFilter) {
             Attribute attribute = equalsFilter.getAttribute();
 
-            if (attribute != null) {
-                String attributeName = attribute.getName();
-                List<Object> attributeValues = attribute.getValue();
+            String attributeName = attribute.getName();
+            List<Object> attributeValues = attribute.getValue();
 
-                if (!attributeName.equals(Uid.NAME)) throw new UnsupportedOperationException("Could not search, reason: attribute " + attributeName + " is not supported by search operation");
+            if (!attributeName.equals(Uid.NAME)) throw new UnsupportedOperationException("Could not search, reason: attribute " + attributeName + " is not supported by search operation");
 
-                if (attributeValues.size() != 1) throw new UnsupportedOperationException("Could not search, reason: search attribute must have only one value. Found " + attributeValues.size());
-                String id = String.valueOf(attributeValues.get(0));
+            String id = String.valueOf(attributeValues.get(0));
 
-                handler.handle(getObject(id));
-                LOG.ok("Collection with id \"{0}\" was found.", id);
-            }
+            handler.handle(getObject(id));
+            LOG.ok("Collection with id \"{0}\" was found.", id);
+
         } else {
             throw new UnsupportedOperationException("Filter " + query + " is not supported.");
         }
@@ -90,8 +83,6 @@ public class CollectionsProcessing extends ObjectProcessing {
     private ConnectorObject getObject(String id) {
         BitwardenCollection collection = collectionsService.get(id);
 
-        if (collection == null) throw new UnknownUidException("Collection \"" + id + "\" not found.");
-
         LOG.ok("Found collection \"{0}\"", collection);
         return translate(collection);
     }
@@ -104,6 +95,13 @@ public class CollectionsProcessing extends ObjectProcessing {
         addAttribute(connectorObject, Name.NAME, collection.getId());
         addAttribute(connectorObject, CollectionSchemaAttributes.EXTERNAL_ID, collection.getExternalId());
 
+        List<String> groups = new ArrayList<>();
+        for (BitwardenAccess group: collection.getGroups()) {
+            groups.add(group.toString());
+        }
+
+        addAttribute(connectorObject, CollectionSchemaAttributes.GROUPS, groups);
+
         return connectorObject.build();
     }
 
@@ -113,10 +111,11 @@ public class CollectionsProcessing extends ObjectProcessing {
 
         BitwardenCollection collection = new BitwardenCollection();
 
-        if (id != null) collection.setId(id);
+        collection.setId(id);
 
         collection.setExternalId(externalId);
         collection.setObject("collection");
+        collection.setGroups(transform(attributes, CollectionSchemaAttributes.GROUPS));
 
         return collection;
     }
@@ -141,6 +140,15 @@ public class CollectionsProcessing extends ObjectProcessing {
                         String.class,
                         null,
                         AttributeInfo.Flags.REQUIRED
+                )
+        );
+
+        objectClassInfoBuilder.addAttributeInfo(
+                buildAttributeInfo(
+                        CollectionSchemaAttributes.GROUPS,
+                        String.class,
+                        null,
+                        AttributeInfo.Flags.MULTIVALUED
                 )
         );
 
