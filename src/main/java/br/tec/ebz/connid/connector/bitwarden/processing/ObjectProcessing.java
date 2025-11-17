@@ -1,5 +1,6 @@
 package br.tec.ebz.connid.connector.bitwarden.processing;
 
+import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenAccess;
 import br.tec.ebz.connid.connector.bitwarden.schema.GroupSchemaAttributes;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.common.security.GuardedString;
@@ -8,6 +9,7 @@ import org.identityconnectors.framework.common.exceptions.UnknownUidException;
 import org.identityconnectors.framework.common.objects.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class ObjectProcessing {
     private static final Log LOG = Log.getLog(ObjectProcessing.class);
@@ -33,9 +35,7 @@ public abstract class ObjectProcessing {
             return (T) AttributeUtil.getBooleanValue(attr);
         } else if (List.class.equals(type)) {
             return (T) attr.getValue();
-        } else if(Date.class.equals(type)) {
-            return (T) AttributeUtil.getDateValue(attr);
-        } else {
+        }  else {
             throw new InvalidAttributeValueException("Unknown value type " + type);
         }
     }
@@ -98,12 +98,6 @@ public abstract class ObjectProcessing {
             }
         });
 
-
-        LOG.info("ADD Entries {0}", adds);
-        LOG.info("REPLACE Entries {0}", replaces);
-        LOG.info("REMOVE Entries {0}", removes);
-
-
         for (Attribute remAttr : removes) {
             if (COLLECTIONS.equals(remAttr.getName())) {
                 Set<String> idsToRemove = parseIds(remAttr.getValue());
@@ -121,14 +115,9 @@ public abstract class ObjectProcessing {
         }
 
         for (Attribute newAttr : replaces) {
-            if (COLLECTIONS.equals(newAttr.getName())) {
-                coll.clear();
-                coll.putAll(parseCollections(newAttr.getValue()));
-            } else {
-                Attribute oldAttr = AttributeUtil.find(newAttr.getName(), processedAttrs);
-                if (oldAttr != null) processedAttrs.remove(oldAttr);
-                processedAttrs.add(newAttr);
-            }
+            Attribute oldAttr = AttributeUtil.find(newAttr.getName(), processedAttrs);
+            if (oldAttr != null) processedAttrs.remove(oldAttr);
+            processedAttrs.add(newAttr);
         }
 
         for (Attribute addAttr : adds) {
@@ -176,7 +165,6 @@ public abstract class ObjectProcessing {
         boolean ro;
         boolean hp;
         boolean mg;
-        Flags() {}
         Flags(boolean ro, boolean hp, boolean mg) { this.ro = ro; this.hp = hp; this.mg = mg; }
     }
 
@@ -267,5 +255,31 @@ public abstract class ObjectProcessing {
         }
 
         return aib.build();
+    }
+
+    protected static List<BitwardenAccess> transform(Set<Attribute> attributes, String attributeName) {
+        AttributesAccessor accessor = new AttributesAccessor(attributes);
+
+        List<BitwardenAccess> collectionsAccesses = new ArrayList<>();
+        Attribute collections = accessor.find(attributeName);
+
+        if (collections != null && collections.getValue() != null) {
+            for (Object v : collections.getValue()) {
+                String collection = (String) v;
+                Map<String,String> m = Arrays.stream(collection.split(";"))
+                        .map(p -> p.split("=",2))
+                        .collect(Collectors.toMap(a->a[0], a->a[1]));
+                BitwardenAccess access = new BitwardenAccess();
+                access.setId(m.get("id"));
+                access.setReadOnly("1".equals(m.getOrDefault("ro","0")));
+                access.setHidePassword("1".equals(m.getOrDefault("hp","0")));
+                access.setManage("1".equals(m.getOrDefault("mg","0")));
+
+                collectionsAccesses.add(access);
+
+            }
+        }
+
+        return collectionsAccesses;
     }
 }
