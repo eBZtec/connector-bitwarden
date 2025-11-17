@@ -13,7 +13,7 @@ public class BearerAuthInterceptor extends AbstractPhaseInterceptor<Message> {
     private final String token;
 
     public BearerAuthInterceptor(String token) {
-        super(Phase.PREPARE_SEND); // Fase correta para headers
+        super(Phase.PREPARE_SEND);
         this.token = token;
     }
 
