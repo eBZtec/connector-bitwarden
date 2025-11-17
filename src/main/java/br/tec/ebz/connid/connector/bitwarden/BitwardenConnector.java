@@ -16,7 +16,6 @@
 
 package br.tec.ebz.connid.connector.bitwarden;
 
-import br.tec.ebz.connid.connector.bitwarden.processing.AccessProcessing;
 import br.tec.ebz.connid.connector.bitwarden.processing.CollectionsProcessing;
 import br.tec.ebz.connid.connector.bitwarden.processing.GroupsProcessing;
 import br.tec.ebz.connid.connector.bitwarden.processing.MemberProcessing;
@@ -25,7 +24,6 @@ import jakarta.ws.rs.NotAuthorizedException;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.ProcessingException;
 import org.apache.cxf.interceptor.Fault;
-import org.apache.cxf.interceptor.security.AuthenticationException;
 import org.identityconnectors.common.CollectionUtil;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.*;
@@ -39,7 +37,6 @@ import org.identityconnectors.framework.spi.operations.*;
 
 import java.io.IOException;
 import java.net.ConnectException;
-import java.net.MalformedURLException;
 import java.net.NoRouteToHostException;
 import java.net.SocketTimeoutException;
 import java.util.List;
@@ -188,7 +185,7 @@ public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp
         return schemaBuilder.build();
     }
 
-    private static void handleConnectorException(Exception e, String message) {
+    protected static void handleConnectorException(Exception e, String message) {
         if (e instanceof UnsupportedOperationException) {
             throw new UnsupportedOperationException(message);
         }
@@ -203,10 +200,6 @@ public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp
 
         if (e instanceof BadRequestException ex) {
             throw new InvalidAttributeValueException(message + ". Status code response: " + ex.getResponse().getStatus() + ", response: " + ex.getMessage());
-        }
-
-        if (e instanceof MalformedURLException) {
-            throw new ConfigurationException(message + ", " + e.getMessage());
         }
 
         if (e instanceof ConnectException) {
@@ -224,6 +217,12 @@ public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp
         if (e instanceof NotAuthorizedException ex) {
             throw new InvalidCredentialException(message + ". Cause: " + ex.getMessage());
         }
+
+        if (e instanceof ConnectionFailedException) {
+            throw new ConnectionFailedException(message + ". Cause: " + e.getMessage());
+        }
+
+        throw new ConnectorException(message + ", reason: " + e.getMessage());
 
     }
 }
