@@ -2,10 +2,10 @@ package br.tec.ebz.connid.connector.bitwarden.processing;
 
 import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenListResponse;
 import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenMember;
+import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenPermissions;
 import br.tec.ebz.connid.connector.bitwarden.schema.MemberSchemaAttributes;
 import br.tec.ebz.connid.connector.bitwarden.services.MembersService;
 import org.identityconnectors.common.logging.Log;
-import org.identityconnectors.framework.common.exceptions.UnknownUidException;
 import org.identityconnectors.framework.common.objects.*;
 import org.identityconnectors.framework.common.objects.filter.EqualsFilter;
 import org.identityconnectors.framework.common.objects.filter.Filter;
@@ -41,7 +41,7 @@ public class MemberProcessing extends ObjectProcessing {
         Set<Attribute> updatedAttributes = updateObjectAttributes(uid, attributeDeltas, currentObject);
         BitwardenMember member = translate(updatedAttributes);
 
-        BitwardenMember updatedMember = membersService.update(uid.getUidValue(), member);
+        membersService.update(uid.getUidValue(), member);
 
         LOG.ok("Member \"{0}\" updated successfully.", uid.getUidValue());
     }
@@ -62,19 +62,16 @@ public class MemberProcessing extends ObjectProcessing {
     private void searchByFilter(Filter query, ResultsHandler handler, OperationOptions options) {
         if (query instanceof EqualsFilter equalsFilter) {
             Attribute attribute = equalsFilter.getAttribute();
+            String attributeName = attribute.getName();
+            List<Object> attributeValues = attribute.getValue();
 
-            if (attribute != null) {
-                String attributeName = attribute.getName();
-                List<Object> attributeValues = attribute.getValue();
+            if (!attributeName.equals(Uid.NAME)) throw new UnsupportedOperationException("Could not search member, reason: attribute " + attributeName + " is not supported by search operation");
 
-                if (!attributeName.equals(Uid.NAME)) throw new UnsupportedOperationException("Could not search member, reason: attribute " + attributeName + " is not supported by search operation");
+            String id = String.valueOf(attributeValues.get(0));
 
-                if (attributeValues.size() != 1) throw new UnsupportedOperationException("Could not search member, reason: search attribute must have only one value. Found " + attributeValues.size());
-                String id = String.valueOf(attributeValues.get(0));
+            handler.handle(getObject(id));
+            LOG.ok("Member \"{0}\" was found.", id);
 
-                handler.handle(getObject(id));
-                LOG.ok("Member \"{0}\" was found.", id);
-            }
         } else {
             throw new UnsupportedOperationException("Filter " + query + " is not supported.");
         }
@@ -93,10 +90,7 @@ public class MemberProcessing extends ObjectProcessing {
     private ConnectorObject getObject(String id) {
         BitwardenMember member = membersService.get(id);
 
-        if (member == null) throw new UnknownUidException("Member id \"" + id + "\" does not exists");
-
         member.setGroups(membersService.getMemberGroups(id));
-
         LOG.ok("Found member {0} for id \"{1}\"", member, id);
 
         return translate(member);
@@ -129,9 +123,44 @@ public class MemberProcessing extends ObjectProcessing {
         member.setGroups(groups);
         member.setObject("member");
 
+        if (type != null && type == 4) {
+            member.setPermissions(getPermission(attributes));
+        }
+
         LOG.info("Member defined as {0}", member);
 
         return member;
+    }
+
+    private static BitwardenPermissions getPermission(Set<Attribute> attributes) {
+        Boolean accessEventLogs = getAttributeValue(MemberSchemaAttributes.PERMISSIONS_ACCESS_EVENTS_LOGS, Boolean.class, attributes);
+        Boolean accessImportExport = getAttributeValue(MemberSchemaAttributes.PERMISSIONS_ACCESS_IMPORT_EXPORT, Boolean.class, attributes);
+        Boolean accessReports = getAttributeValue(MemberSchemaAttributes.PERMISSIONS_ACCESS_REPORTS, Boolean.class, attributes);
+        Boolean createNewCollections = getAttributeValue(MemberSchemaAttributes.PERMISSIONS_CREATE_NEW_COLLECTIONS, Boolean.class, attributes);
+        Boolean editAnyCollection = getAttributeValue(MemberSchemaAttributes.PERMISSIONS_EDIT_ANY_COLLECTION, Boolean.class, attributes);
+        Boolean deleteAnyCollection = getAttributeValue(MemberSchemaAttributes.PERMISSIONS_DELETE_ANY_COLLECTION, Boolean.class, attributes);
+        Boolean manageGroups = getAttributeValue(MemberSchemaAttributes.PERMISSIONS_MANAGE_GROUPS, Boolean.class, attributes);
+        Boolean managePolicies = getAttributeValue(MemberSchemaAttributes.PERMISSIONS_MANAGE_POLICIES, Boolean.class, attributes);
+        Boolean manageSso = getAttributeValue(MemberSchemaAttributes.PERMISSIONS_MANAGE_SSO, Boolean.class, attributes);
+        Boolean manageUsers = getAttributeValue(MemberSchemaAttributes.PERMISSIONS_MANAGE_USERS, Boolean.class, attributes);
+        Boolean manageResetPassword = getAttributeValue(MemberSchemaAttributes.PERMISSIONS_MANAGE_RESET_PASSWORD, Boolean.class, attributes);
+        Boolean manageScim = getAttributeValue(MemberSchemaAttributes.PERMISSIONS_MANAGE_SCIM, Boolean.class, attributes);
+
+        BitwardenPermissions permissions = new BitwardenPermissions();
+        permissions.setAccessEventsLogs(accessEventLogs);
+        permissions.setAccessImportExport(accessImportExport);
+        permissions.setAccessReports(accessReports);
+        permissions.setCreateNewCollection(createNewCollections);
+        permissions.setEditAnyCollection(editAnyCollection);
+        permissions.setDeleteAnyCollection(deleteAnyCollection);
+        permissions.setManageGroups(manageGroups);
+        permissions.setManagePolicies(managePolicies);
+        permissions.setManageSso(manageSso);
+        permissions.setManageUsers(manageUsers);
+        permissions.setManageResetPassword(manageResetPassword);
+        permissions.setManageScim(manageScim);
+
+        return permissions;
     }
 
     private ConnectorObject translate(BitwardenMember member) {
@@ -140,6 +169,7 @@ public class MemberProcessing extends ObjectProcessing {
 
         addAttribute(connectorObject, Uid.NAME, member.getId());
         addAttribute(connectorObject, Name.NAME, member.getEmail());
+        addAttribute(connectorObject, MemberSchemaAttributes.NAME, member.getName());
         addAttribute(connectorObject, MemberSchemaAttributes.TWO_FACTOR_ENABLED, member.getTwoFactorEnabled());
         addAttribute(connectorObject, MemberSchemaAttributes.STATUS, member.getStatus());
         addAttribute(connectorObject, MemberSchemaAttributes.RESET_PASSWORD_ENROLLED, member.getResetPasswordEnrolled());
