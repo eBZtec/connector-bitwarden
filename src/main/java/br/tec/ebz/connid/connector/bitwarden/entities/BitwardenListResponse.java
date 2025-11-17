@@ -22,6 +22,4 @@ public class BitwardenListResponse<T> {
     public void setData(List<T> data) {
         this.data = data;
     }
-
-
 }
