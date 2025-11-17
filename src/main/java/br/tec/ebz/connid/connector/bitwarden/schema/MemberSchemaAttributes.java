@@ -6,7 +6,6 @@ public interface MemberSchemaAttributes {
     String EMAIL = "email";
     String TWO_FACTOR_ENABLED = "twoFactorEnabled";
     String STATUS = "status";
-    String COLLECTIONS = "collections";
     String RESET_PASSWORD_ENROLLED = "resetPasswordEnrolled";
     String SSO_EXTERNAL_ID = "ssoExternalId";
     String TYPE = "type";
