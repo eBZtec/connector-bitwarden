@@ -7,14 +7,12 @@ import br.tec.ebz.connid.connector.bitwarden.schema.GroupSchemaAttributes;
 import br.tec.ebz.connid.connector.bitwarden.services.GroupsService;
 import br.tec.ebz.connid.connector.bitwarden.services.MembersService;
 import org.identityconnectors.common.logging.Log;
-import org.identityconnectors.framework.common.exceptions.UnknownUidException;
 import org.identityconnectors.framework.common.objects.*;
 import org.identityconnectors.framework.common.objects.filter.ContainsAllValuesFilter;
 import org.identityconnectors.framework.common.objects.filter.EqualsFilter;
 import org.identityconnectors.framework.common.objects.filter.Filter;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class GroupsProcessing extends ObjectProcessing{
 
@@ -22,11 +20,6 @@ public class GroupsProcessing extends ObjectProcessing{
 
     public static final String OBJECT_CLASS_NAME = "group";
     public static final ObjectClass OBJECT_CLASS = new ObjectClass(OBJECT_CLASS_NAME);
-
-    public static final String ACCESS_CLASS_NAME = "COLLECTION_ACCESS";
-    public static final ObjectClass ACCESS_OBJECT_CLASS = new ObjectClass(ACCESS_CLASS_NAME);
-
-    public static final String COLLECTION_ACCESS_CLASS_NAME = "collection_access";
 
     private final GroupsService groupsService;
     private final MembersService membersService;
@@ -86,41 +79,37 @@ public class GroupsProcessing extends ObjectProcessing{
         if (query instanceof EqualsFilter equalsFilter) {
             Attribute attribute = equalsFilter.getAttribute();
 
-            if (attribute != null) {
-                String attributeName = attribute.getName();
-                List<Object> attributeValues = attribute.getValue();
+            String attributeName = attribute.getName();
+            List<Object> attributeValues = attribute.getValue();
 
-                if (!attributeName.equals(Uid.NAME)) throw new UnsupportedOperationException("Could not search, reason: attribute " + attributeName + " is not supported by search operation");
+            if (!attributeName.equals(Uid.NAME)) throw new UnsupportedOperationException("Could not search, reason: attribute " + attributeName + " is not supported by search operation");
 
-                if (attributeValues.size() != 1) throw new UnsupportedOperationException("Could not search, reason: search attribute must have only one value. Found " + attributeValues.size());
-                String id = String.valueOf(attributeValues.get(0));
+            String id = String.valueOf(attributeValues.get(0));
 
-                handler.handle(getObject(id));
-                LOG.ok("Member \"{0}\" was found.", id);
-            }
+            handler.handle(getObject(id));
+            LOG.ok("Member \"{0}\" was found.", id);
+
         } else if (query instanceof ContainsAllValuesFilter containsAllValuesFilter) {
             Attribute attribute = containsAllValuesFilter.getAttribute();
 
-            if (attribute != null) {
-                String attributeName = attribute.getName();
-                List<Object> attributeValues = attribute.getValue();
+            String attributeName = attribute.getName();
+            List<Object> attributeValues = attribute.getValue();
 
-                if (!attributeName.equals(GroupSchemaAttributes.MEMBERS))
-                    throw new UnsupportedOperationException("Could not search member, reason: attribute " + attributeName + " is not supported by contains all values filter");
+            if (!attributeName.equals(GroupSchemaAttributes.MEMBERS))
+                throw new UnsupportedOperationException("Could not search member, reason: attribute " + attributeName + " is not supported by contains all values filter");
 
-                if (attributeValues.size() != 1)
-                    throw new UnsupportedOperationException("Could not search member, reason: search attribute must have only one value. Found " + attributeValues.size());
+            if (attributeValues.size() != 1)
+                throw new UnsupportedOperationException("Could not search member, reason: search attribute must have only one value. Found " + attributeValues.size());
 
-                String id = String.valueOf(attributeValues.get(0));
-                List<String> memberGroupsIds = membersService.getMemberGroups(id);
+            String id = String.valueOf(attributeValues.get(0));
+            List<String> memberGroupsIds = membersService.getMemberGroups(id);
 
-                for (String groupId: memberGroupsIds) {
-                    handler.handle(getObject(groupId));
-                }
-
-                LOG.ok("Found {0} groups for user {1}", memberGroupsIds.size(), id);
-
+            for (String groupId: memberGroupsIds) {
+                handler.handle(getObject(groupId));
             }
+
+            LOG.ok("Found {0} groups for user {1}", memberGroupsIds.size(), id);
+
         } else {
             throw new UnsupportedOperationException("Filter " + query + " is not supported.");
         }
@@ -128,8 +117,6 @@ public class GroupsProcessing extends ObjectProcessing{
 
     private ConnectorObject getObject(String id) {
         BitwardenGroup group = groupsService.get(id);
-
-        if (group == null) throw new UnknownUidException("Group \"" + id + "\" not found.");
 
         List<String> members = groupsService.getGroupMembers(id);
         group.setMembers(members);
@@ -171,35 +158,9 @@ public class GroupsProcessing extends ObjectProcessing{
         group.setExternalId(externalId);
         group.setMembers(members);
         group.setObject("group");
-        group.setCollections(getCollectionsAccesses(attributes));
+        group.setCollections(transform(attributes, GroupSchemaAttributes.COLLECTIONS));
 
         return group;
-    }
-
-    private static List<BitwardenAccess> getCollectionsAccesses(Set<Attribute> attributes) {
-        AttributesAccessor accessor = new AttributesAccessor(attributes);
-
-        List<BitwardenAccess> collectionsAccesses = new ArrayList<>();
-        Attribute collections = accessor.find(GroupSchemaAttributes.COLLECTIONS);
-
-        if (collections != null && collections.getValue() != null) {
-            for (Object v : collections.getValue()) {
-                String collection = (String) v;
-                Map<String,String> m = Arrays.stream(collection.split(";"))
-                        .map(p -> p.split("=",2))
-                        .collect(Collectors.toMap(a->a[0], a->a[1]));
-                BitwardenAccess access = new BitwardenAccess();
-                access.setId(m.get("id"));
-                access.setReadOnly("1".equals(m.getOrDefault("ro","0")));
-                access.setHidePassword("1".equals(m.getOrDefault("hp","0")));
-                access.setManage("1".equals(m.getOrDefault("mg","0")));
-
-                collectionsAccesses.add(access);
-
-            }
-        }
-
-        return collectionsAccesses;
     }
 
     public ObjectClassInfo schema() {
