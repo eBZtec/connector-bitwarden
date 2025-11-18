@@ -1,6 +1,8 @@
 package br.tec.ebz.connid.connector.bitwarden;
 
+import br.tec.ebz.connid.connector.bitwarden.processing.GroupsProcessing;
 import br.tec.ebz.connid.connector.bitwarden.processing.MemberProcessing;
+import br.tec.ebz.connid.connector.bitwarden.schema.GroupSchemaAttributes;
 import br.tec.ebz.connid.connector.bitwarden.schema.MemberSchemaAttributes;
 import org.identityconnectors.framework.api.ConnectorFacade;
 import org.identityconnectors.framework.common.objects.*;
@@ -18,8 +20,6 @@ public class UpdateMemberTest extends BitwardenConfigurationHandler {
     private String email;
     private String name;
     private String login;
-
-    private String group = "c1f70335-efdf-4337-a6f8-b35200e5f299";
 
     @BeforeEach
     public void generateId() {
@@ -50,8 +50,19 @@ public class UpdateMemberTest extends BitwardenConfigurationHandler {
 
         Set<AttributeDelta> deltaAttributes = new HashSet<AttributeDelta>();
 
+        // Create group
+        Set<Attribute> groupAttributes = new HashSet<>();
+
+        groupAttributes.add(AttributeBuilder.build(Name.NAME, name));
+        groupAttributes.add(AttributeBuilder.build(GroupSchemaAttributes.EXTERNAL_ID, name));
+
+        Uid groupUid = facade.create(GroupsProcessing.OBJECT_CLASS, groupAttributes, null);
+
+        assertNotNull(groupUid, "Group uid cannot be null on creation");
+        // End create group
+
         List<String> newGroup = new ArrayList<>();
-        newGroup.add("c1f70335-efdf-4337-a6f8-b35200e5f299");
+        newGroup.add(groupUid.getUidValue());
 
         AttributeDeltaBuilder builder = new AttributeDeltaBuilder();
         builder.setName(MemberSchemaAttributes.GROUPS);
@@ -80,8 +91,9 @@ public class UpdateMemberTest extends BitwardenConfigurationHandler {
 
         String groupUpdated = groupValues.get(0).toString();
 
-        assertEquals(group, groupUpdated);
+        assertEquals(groupUid.getUidValue(), groupUpdated);
 
         facade.delete(MemberProcessing.OBJECT_CLASS, uid, null);
+        facade.delete(GroupsProcessing.OBJECT_CLASS, groupUid, null);
     }
 }

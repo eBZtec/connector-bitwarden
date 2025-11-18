@@ -87,4 +87,39 @@ class BitwardenConfigurationTest {
         assertThrows(ConfigurationException.class, configuration::validate);
     }
 
+    @Test
+    void validNullAuthUrlConfiguration() {
+        BitwardenConfiguration configuration = new BitwardenConfiguration();
+
+        configuration.setHostUrl("iam.validurl.com");
+        configuration.setClientId("I_AM_A_CLIENTID");
+        configuration.setClientSecret(new GuardedString("i_am_client_secret".toCharArray()));
+
+        assertThrows(ConfigurationException.class, configuration::validate);
+    }
+
+    @Test
+    void validEmptyAuthUrlConfiguration() {
+        BitwardenConfiguration configuration = new BitwardenConfiguration();
+
+        configuration.setHostUrl("iam.validurl.com");
+        configuration.setAuthUrl("");
+        configuration.setClientId("I_AM_A_CLIENTID");
+        configuration.setClientSecret(new GuardedString("i_am_client_secret".toCharArray()));
+
+        assertThrows(ConfigurationException.class, configuration::validate);
+    }
+
+    @Test
+    void validInvalidAuthUrlConfiguration() {
+        BitwardenConfiguration configuration = new BitwardenConfiguration();
+
+        configuration.setHostUrl("iam.validurl.com");
+        configuration.setAuthUrl("wrong-auth-url");
+        configuration.setClientId("I_AM_A_CLIENTID");
+        configuration.setClientSecret(new GuardedString("i_am_client_secret".toCharArray()));
+
+        assertThrows(ConfigurationException.class, configuration::validate);
+    }
+
 }

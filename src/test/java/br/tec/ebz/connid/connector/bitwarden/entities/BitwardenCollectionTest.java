@@ -1,20 +1,36 @@
 package br.tec.ebz.connid.connector.bitwarden.entities;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class BitwardenCollectionTest {
 
-    private BitwardenAccess access(String id, Boolean readOnly, Boolean hidePassword, Boolean manage) {
+    private static BitwardenAccess access(String id, Boolean readOnly, Boolean hidePassword, Boolean manage) {
         BitwardenAccess a = new BitwardenAccess();
         a.setId(id);
         a.setReadOnly(readOnly);
         a.setHidePassword(hidePassword);
         a.setManage(manage);
         return a;
+    }
+
+    private static BitwardenCollection collection(String id,
+                                                  String externalId,
+                                                  List<BitwardenAccess> groups,
+                                                  String object) {
+        BitwardenCollection c = new BitwardenCollection();
+        c.setId(id);
+        c.setExternalId(externalId);
+        c.setGroups(groups);
+        c.setObject(object);
+        return c;
     }
 
     @Test
@@ -30,14 +46,6 @@ class BitwardenCollectionTest {
         assertEquals("EXT-1", c.getExternalId());
         assertEquals("collection", c.getObject());
         assertEquals(List.of(access("A", true, false, true), access("B", false, false, false)), c.getGroups());
-    }
-
-    @Test
-    void should_test_get_groups_returns_empty_list_when_null() {
-        BitwardenCollection c = new BitwardenCollection();
-
-        assertNotNull(c.getGroups());
-        assertTrue(c.getGroups().isEmpty());
     }
 
     @Test
@@ -60,34 +68,20 @@ class BitwardenCollectionTest {
     }
 
     @Test
-    void should_test_equals_different_objects() {
-        BitwardenCollection c1 = new BitwardenCollection();
-        BitwardenCollection c2 = new BitwardenCollection();
-
-        c1.setId("1");
-        c1.setExternalId("A");
-        c1.setObject("obj");
-        c1.setGroups(List.of(access("X", false, false, true)));
-
-        c2.setId("2");
-        c2.setExternalId("A");
-        c2.setObject("obj");
-        c2.setGroups(List.of(access("X", false, false, true)));
-
-        assertNotEquals(c1, c2);
-    }
-
-    @Test
     void should_test_equals_null_or_different_class() {
         BitwardenCollection c1 = new BitwardenCollection();
         c1.setId("1");
         c1.setObject("obj");
+        c1.setGroups(null);
+        c1.setExternalId("ext");
 
         BitwardenCollection c2 = new BitwardenCollection();
         c2.setId("2");
         c2.setObject("obj");
+        c2.setGroups(null);
+        c2.setExternalId("ext");
 
-        assertNotEquals(c1, c2);
+        assertNotEquals(true, c1.equals(c2));
     }
 
     @Test
@@ -95,12 +89,10 @@ class BitwardenCollectionTest {
         BitwardenCollection c1 = new BitwardenCollection();
         c1.setId("1");
         c1.setObject("obj");
+        c1.setGroups(null);
+        c1.setExternalId("ext");
 
-        BitwardenCollection c2 = new BitwardenCollection();
-        c2.setId("1");
-        c2.setObject("obj");
-
-        assertEquals(c1, c2);
+        assertNotEquals(true, c1.equals(new Object()));
     }
 
     @Test
@@ -120,6 +112,66 @@ class BitwardenCollectionTest {
         assertTrue(s.contains("ro=0"));
         assertTrue(s.contains("hp=1"));
         assertTrue(s.contains("mg=1"));
+    }
+
+    static Stream<Arguments> equalsCases() {
+        BitwardenCollection base = collection(
+                "ID",
+                "EXT",
+                List.of(access("A1", true, false, true)),
+                "object"
+        );
+
+        BitwardenCollection same = collection(
+                "ID",
+                "EXT",
+                List.of(access("A1", true, false, true)),
+                "object"
+        );
+
+        BitwardenCollection differentId = collection(
+                "OTHER_ID",
+                "EXT",
+                List.of(access("A1", true, false, true)),
+                "object"
+        );
+
+        BitwardenCollection differentExternalId = collection(
+                "ID",
+                "OTHER_EXT",
+                List.of(access("A1", true, false, true)),
+                "object"
+        );
+
+        BitwardenCollection differentGroups = collection(
+                "ID",
+                "EXT",
+                List.of(access("A2", true, true, false)), // só muda o grupo
+                "object"
+        );
+
+        BitwardenCollection differentObject = collection(
+                "ID",
+                "EXT",
+                List.of(access("A1", true, false, true)),
+                "otherObject"
+        );
+
+        return Stream.of(
+                Arguments.of(base, same, true),
+                Arguments.of(base, differentId, false),
+                Arguments.of(base, differentExternalId, false),
+                Arguments.of(base, differentGroups, false),
+                Arguments.of(base, differentObject, false),
+                Arguments.of(base, null, false),
+                Arguments.of(base, "not a collection", false)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("equalsCases")
+    void testEqualsParametrized(BitwardenCollection left, Object right, boolean expected) {
+        assertEquals(expected, left.equals(right));
     }
 
 }

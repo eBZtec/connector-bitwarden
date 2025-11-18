@@ -4,19 +4,13 @@ import br.tec.ebz.connid.connector.bitwarden.processing.MemberProcessing;
 import br.tec.ebz.connid.connector.bitwarden.schema.MemberSchemaAttributes;
 import org.identityconnectors.framework.api.ConnectorFacade;
 import org.identityconnectors.framework.common.exceptions.InvalidAttributeValueException;
-import org.identityconnectors.framework.common.objects.Attribute;
-import org.identityconnectors.framework.common.objects.AttributeBuilder;
-import org.identityconnectors.framework.common.objects.Name;
-import org.identityconnectors.framework.common.objects.Uid;
+import org.identityconnectors.framework.common.objects.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 public class CreateMemberTest extends BitwardenConfigurationHandler{
 
@@ -24,7 +18,6 @@ public class CreateMemberTest extends BitwardenConfigurationHandler{
     private String email;
     private String name;
     private String login;
-    private static final String password = "smartway";
 
     @BeforeEach
     public void generateId() {
@@ -73,7 +66,5 @@ public class CreateMemberTest extends BitwardenConfigurationHandler{
         assertThrows(InvalidAttributeValueException.class, () -> {
             Uid uid = facade.create(MemberProcessing.OBJECT_CLASS, attributes, null);
         });
-
-
     }
 }

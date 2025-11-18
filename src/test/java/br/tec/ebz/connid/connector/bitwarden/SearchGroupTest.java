@@ -1,12 +1,16 @@
 package br.tec.ebz.connid.connector.bitwarden;
 
+import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenGroup;
+import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenMember;
 import br.tec.ebz.connid.connector.bitwarden.processing.GroupsProcessing;
 import br.tec.ebz.connid.connector.bitwarden.processing.MemberProcessing;
-import br.tec.ebz.connid.connector.bitwarden.processing.ObjectProcessing;
+import br.tec.ebz.connid.connector.bitwarden.repository.ObjectsRepository;
 import br.tec.ebz.connid.connector.bitwarden.schema.GroupSchemaAttributes;
 import br.tec.ebz.connid.connector.bitwarden.schema.MemberSchemaAttributes;
 import org.identityconnectors.framework.api.ConnectorFacade;
+import org.identityconnectors.framework.common.exceptions.UnknownUidException;
 import org.identityconnectors.framework.common.objects.*;
+import org.identityconnectors.framework.common.objects.filter.AndFilter;
 import org.identityconnectors.framework.common.objects.filter.ContainsAllValuesFilter;
 import org.identityconnectors.framework.common.objects.filter.EqualsFilter;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,25 +23,31 @@ import static org.junit.jupiter.api.Assertions.*;
 public class SearchGroupTest extends BitwardenConfigurationHandler{
 
     private String email;
-    private String name;
+    private String groupName;
+    private String userName;
     private String login;
+    private ConnectorFacade facade;
+    private ObjectsRepository objectsRepository;
+    private ListResultHandler handler;
 
     @BeforeEach
     public void generateId() {
+        facade = getTestConnection();
+
         int randomCode = new Random().nextInt(1000);
-        name = "Test Group" + randomCode;
+
+        groupName = "Test Group" + randomCode;
+        userName = "Test User " + randomCode;
         login = "test.user" + randomCode;
         email = login + "@example.com";
+
+        objectsRepository = new ObjectsRepository(facade);
+        handler = new ListResultHandler();
     }
 
     @Test
     void should_list_all_members() {
-        ConnectorFacade facade = getTestConnection();
-
-        ListResultHandler handler = new ListResultHandler();
-
-        facade.search(MemberProcessing.OBJECT_CLASS, null, handler, null);
-
+        facade.search(GroupsProcessing.OBJECT_CLASS, null, handler, null);
         assertTrue(handler.getObjects().size() > 1);
     }
 
@@ -47,10 +57,11 @@ public class SearchGroupTest extends BitwardenConfigurationHandler{
 
         Set<Attribute> attributes = new HashSet<>();
 
-        attributes.add(AttributeBuilder.build(Name.NAME, name));
-        attributes.add(AttributeBuilder.build(GroupSchemaAttributes.EXTERNAL_ID, name));
+        BitwardenGroup group = new BitwardenGroup();
+        group.setName(groupName);
+        group.setExternalId(groupName);
 
-        Uid groupUid = facade.create(GroupsProcessing.OBJECT_CLASS, attributes, null);
+        Uid groupUid = objectsRepository.create(group);
         assertNotNull(groupUid, "Group uid cannot be null on creation");
 
         List<String> newGroups = new ArrayList<>();
@@ -59,7 +70,7 @@ public class SearchGroupTest extends BitwardenConfigurationHandler{
         attributes = new HashSet<>();
 
         attributes.add(AttributeBuilder.build(Name.NAME, email));
-        attributes.add(AttributeBuilder.build(MemberSchemaAttributes.NAME, name));
+        attributes.add(AttributeBuilder.build(MemberSchemaAttributes.NAME, userName));
         attributes.add(AttributeBuilder.build(MemberSchemaAttributes.TWO_FACTOR_ENABLED, false));
         attributes.add(AttributeBuilder.build(MemberSchemaAttributes.STATUS, 0));
         attributes.add(AttributeBuilder.build(MemberSchemaAttributes.RESET_PASSWORD_ENROLLED, false));
@@ -72,19 +83,66 @@ public class SearchGroupTest extends BitwardenConfigurationHandler{
         List<String> members = new ArrayList<>();
         members.add(memberUid.getUidValue());
 
-        assertNotNull(memberUid, "Member uid cannot be null");
-
-        ListResultHandler handler = new ListResultHandler();
         Attribute attribute = AttributeBuilder.build(GroupSchemaAttributes.MEMBERS, members);
         ContainsAllValuesFilter filter = new ContainsAllValuesFilter(attribute);
 
         facade.search(GroupsProcessing.OBJECT_CLASS, filter, handler, null);
 
         List<ConnectorObject> objects = handler.getObjects();
-
         assertEquals(1, objects.size());
 
-        facade.delete(MemberProcessing.OBJECT_CLASS, memberUid, null);
-        facade.delete(GroupsProcessing.OBJECT_CLASS, groupUid, null);
+        objectsRepository.delete(memberUid, MemberProcessing.OBJECT_CLASS);
+        objectsRepository.delete(groupUid, GroupsProcessing.OBJECT_CLASS);
+    }
+
+    @Test
+    public void should_return_unsupported_exception_for_equals_filter_with_attribute_not_supported() {
+        Attribute attribute = AttributeBuilder.build(GroupSchemaAttributes.NAME, "test");
+        EqualsFilter filter = new EqualsFilter(attribute);
+
+        assertThrows(UnsupportedOperationException.class, () -> facade.search(GroupsProcessing.OBJECT_CLASS, filter, handler, null));
+    }
+
+    @Test
+    public void should_return_unsupported_exception_for_contains_all_values_filter_with_attribute_not_supported() {
+        List<String> values = new ArrayList<>();
+        values.add("value1");
+        Attribute attribute = AttributeBuilder.build(Uid.NAME, values);
+        ContainsAllValuesFilter filter = new ContainsAllValuesFilter(attribute);
+
+        assertThrows(UnsupportedOperationException.class, () -> facade.search(GroupsProcessing.OBJECT_CLASS, filter, handler, null));
+    }
+
+    @Test
+    public void should_return_unsupported_exception_for_contains_all_values_filter_with_more_than_one_attribute_value() {
+        List<String> values = new ArrayList<>();
+        values.add("value1");
+        values.add("value2");
+
+        Attribute attribute = AttributeBuilder.build(GroupSchemaAttributes.MEMBERS, values);
+        ContainsAllValuesFilter filter = new ContainsAllValuesFilter(attribute);
+
+        assertThrows(UnsupportedOperationException.class, () -> facade.search(GroupsProcessing.OBJECT_CLASS, filter, handler, null));
+    }
+
+    @Test
+    public void should_return_unsupported_exception_for_unsupported_filter() {
+        Attribute attribute = AttributeBuilder.build(GroupSchemaAttributes.NAME, "test");
+        EqualsFilter filter1 = new EqualsFilter(attribute);
+
+        Attribute attribute2 = AttributeBuilder.build(GroupSchemaAttributes.NAME, "test2");
+        EqualsFilter filter2 = new EqualsFilter(attribute2);
+
+        AndFilter filter = new AndFilter(filter1, filter2);
+
+        assertThrows(UnsupportedOperationException.class, () -> facade.search(GroupsProcessing.OBJECT_CLASS, filter, handler, null));
+    }
+
+    @Test
+    public void should_return_unknown_uid_exception_for_not_found_group() {
+        Attribute attribute = AttributeBuilder.build(Uid.NAME, "00000000-0000-0000-0000-000000000000");
+        EqualsFilter filter = new EqualsFilter(attribute);
+
+        assertThrows(UnknownUidException.class, () -> facade.search(GroupsProcessing.OBJECT_CLASS, filter, handler, null));
     }
 }

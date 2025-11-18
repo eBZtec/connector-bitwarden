@@ -1,4 +1,5 @@
 package br.tec.ebz.connid.connector.bitwarden.processing;
 
-public class ObjectProcessingImpl {
+class ObjectProcessingImpl extends ObjectProcessing {
+    // não precisa implementar nada, só herdar
 }

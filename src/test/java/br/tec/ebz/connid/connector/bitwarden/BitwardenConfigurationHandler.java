@@ -2,7 +2,6 @@ package br.tec.ebz.connid.connector.bitwarden;
 
 import org.identityconnectors.common.security.GuardedString;
 import org.identityconnectors.framework.api.APIConfiguration;
-import org.identityconnectors.framework.api.ConfigurationProperty;
 import org.identityconnectors.framework.api.ConnectorFacade;
 import org.identityconnectors.framework.api.ConnectorFacadeFactory;
 import org.identityconnectors.test.common.TestHelpers;
@@ -10,7 +9,7 @@ import org.identityconnectors.test.common.TestHelpers;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 public abstract class BitwardenConfigurationHandler {
-    private static String env(String key) { return System.getenv(key); }
+    public static String env(String key) { return System.getenv(key); }
 
     public static BitwardenConfiguration configFromEnv() {
         BitwardenConfiguration configuration = new BitwardenConfiguration();

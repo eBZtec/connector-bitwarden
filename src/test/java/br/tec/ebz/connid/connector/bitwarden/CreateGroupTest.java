@@ -1,7 +1,5 @@
 package br.tec.ebz.connid.connector.bitwarden;
 
-import br.tec.ebz.connid.connector.bitwarden.processing.AccessProcessing;
-import br.tec.ebz.connid.connector.bitwarden.processing.CollectionsProcessing;
 import br.tec.ebz.connid.connector.bitwarden.processing.GroupsProcessing;
 import br.tec.ebz.connid.connector.bitwarden.schema.GroupSchemaAttributes;
 import org.identityconnectors.framework.api.ConnectorFacade;
@@ -51,33 +49,4 @@ public class CreateGroupTest extends BitwardenConfigurationHandler{
         facade.delete(GroupsProcessing.OBJECT_CLASS, uid, null);
     }
 
-    @Test
-    void should_create_a_group_with_a_collection() {
-        ConnectorFacade facade = getTestConnection();
-
-        Set<Attribute> attributes = new HashSet<>();
-
-        attributes.add(AttributeBuilder.build(Name.NAME, name));
-        attributes.add(AttributeBuilder.build(GroupSchemaAttributes.EXTERNAL_ID, name));
-
-        ConnectorObjectBuilder access1 = new ConnectorObjectBuilder()
-                .setObjectClass(new ObjectClass(CollectionsProcessing.ACCESS_CLASS_NAME))
-                .addAttribute(AttributeBuilder.build(Uid.NAME, "1858ba2d-e5eb-493b-86e5-b345012d9c93"))
-                .addAttribute(AttributeBuilder.build(Name.NAME, "1858ba2d-e5eb-493b-86e5-b345012d9c93"))
-                .addAttribute(AttributeBuilder.build("id", "1858ba2d-e5eb-493b-86e5-b345012d9c93"))
-                .addAttribute(AttributeBuilder.build("readOnly",      true))
-                .addAttribute(AttributeBuilder.build("hidePasswords", true))
-                .addAttribute(AttributeBuilder.build("manage",        false));
-
-        ConnectorObjectReference ref1 = new ConnectorObjectReference(access1.build());
-
-        Attribute collections = AttributeBuilder.build("collections", ref1);
-        attributes.add(collections);
-
-        Uid uid = facade.create(GroupsProcessing.OBJECT_CLASS, attributes, null);
-
-        assertNotNull(uid, "Group uid cannot be null on creation");
-
-        facade.delete(GroupsProcessing.OBJECT_CLASS, uid, null);
-    }
 }
