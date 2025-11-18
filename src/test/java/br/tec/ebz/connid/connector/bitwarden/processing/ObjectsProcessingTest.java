@@ -37,9 +37,9 @@ public class ObjectsProcessingTest {
             Object result = parseIdsMethod.invoke(null, rawValues);
             return (Set<String>) result;
         } catch (InvocationTargetException ite) {
-            throw new RuntimeException(ite.getCause());
+            throw new InvalidAttributeValueException(ite.getCause());
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new InvalidAttributeValueException(e);
         }
     }
 
@@ -47,7 +47,7 @@ public class ObjectsProcessingTest {
         try {
             return (String) extractIdLooseMethod.invoke(null, input);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new InvalidAttributeValueException(e);
         }
     }
 

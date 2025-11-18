@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class UpdateGroupTest extends BitwardenConfigurationHandler{
@@ -46,7 +45,7 @@ public class UpdateGroupTest extends BitwardenConfigurationHandler{
         List<String> updateCollections = new ArrayList<>();
         updateCollections.add("id="+TEST_COLLECTION_ID+";ro=0;hp=1;mg=0");
 
-        Set<AttributeDelta> deltaAttributes = new HashSet<AttributeDelta>();
+        Set<AttributeDelta> deltaAttributes = new HashSet<>();
 
         AttributeDeltaBuilder builder = new AttributeDeltaBuilder();
         builder.setName(GroupSchemaAttributes.COLLECTIONS);

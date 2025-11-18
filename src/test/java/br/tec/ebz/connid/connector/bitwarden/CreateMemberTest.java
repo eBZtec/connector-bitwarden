@@ -63,8 +63,6 @@ public class CreateMemberTest extends BitwardenConfigurationHandler{
         attributes.add(AttributeBuilder.build(MemberSchemaAttributes.SSO_EXTERNAL_ID, login));
         attributes.add(AttributeBuilder.build(MemberSchemaAttributes.GROUPS, new ArrayList<>()));
 
-        assertThrows(InvalidAttributeValueException.class, () -> {
-            Uid uid = facade.create(MemberProcessing.OBJECT_CLASS, attributes, null);
-        });
+        assertThrows(InvalidAttributeValueException.class, () -> facade.create(MemberProcessing.OBJECT_CLASS, attributes, null));
     }
 }

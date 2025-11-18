@@ -1,7 +1,6 @@
 package br.tec.ebz.connid.connector.bitwarden;
 
 import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenGroup;
-import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenMember;
 import br.tec.ebz.connid.connector.bitwarden.processing.GroupsProcessing;
 import br.tec.ebz.connid.connector.bitwarden.processing.MemberProcessing;
 import br.tec.ebz.connid.connector.bitwarden.repository.ObjectsRepository;
