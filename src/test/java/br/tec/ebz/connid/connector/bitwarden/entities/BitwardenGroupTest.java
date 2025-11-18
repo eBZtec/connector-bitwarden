@@ -195,7 +195,7 @@ class BitwardenGroupTest {
 
     @ParameterizedTest
     @MethodSource("equalsCases")
-    void testEqualsParametrized(BitwardenGroup left, Object right, boolean expected) {
+    void test_equals_parametrized(BitwardenGroup left, Object right, boolean expected) {
         assertEquals(expected, left.equals(right));
     }
 }

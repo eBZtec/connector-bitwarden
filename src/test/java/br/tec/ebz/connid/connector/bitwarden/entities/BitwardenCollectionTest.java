@@ -170,7 +170,7 @@ class BitwardenCollectionTest {
 
     @ParameterizedTest
     @MethodSource("equalsCases")
-    void testEqualsParametrized(BitwardenCollection left, Object right, boolean expected) {
+    void test_equals_parametrized(BitwardenCollection left, Object right, boolean expected) {
         assertEquals(expected, left.equals(right));
     }
 

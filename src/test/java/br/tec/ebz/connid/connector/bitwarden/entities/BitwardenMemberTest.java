@@ -461,7 +461,7 @@ class BitwardenMemberTest {
 
     @ParameterizedTest
     @MethodSource("equalsCases")
-    void testEqualsParametrized(BitwardenMember left, Object right, boolean expected) {
+    void test_equals_parametrized(BitwardenMember left, Object right, boolean expected) {
         assertEquals(expected, left.equals(right));
     }
 }

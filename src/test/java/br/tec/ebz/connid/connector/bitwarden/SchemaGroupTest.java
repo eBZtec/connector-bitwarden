@@ -1,6 +1,5 @@
 package br.tec.ebz.connid.connector.bitwarden;
 
-import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.api.ConnectorFacade;
 import org.identityconnectors.framework.common.objects.Schema;
 import org.junit.jupiter.api.BeforeEach;

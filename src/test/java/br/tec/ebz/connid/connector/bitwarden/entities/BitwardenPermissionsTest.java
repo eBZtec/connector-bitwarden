@@ -174,7 +174,7 @@ class BitwardenPermissionsTest {
 
     @ParameterizedTest
     @MethodSource("equalsCases")
-    void testEqualsParametrized(BitwardenPermissions left, Object right, boolean expected) {
+    void test_equals_parametrized(BitwardenPermissions left, Object right, boolean expected) {
         assertEquals(expected, left.equals(right));
     }
 }

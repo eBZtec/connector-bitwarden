@@ -33,7 +33,7 @@ class BitwardenAccessTest {
             "A, true,  true,  true,  A, true,  false, true,  false",
             "A, true,  true,  true,  A, true,  true,  false, false"
     })
-    void testEqualsParametrized(
+    void test_equals_parametrized(
             String id1, Boolean ro1, Boolean hp1, Boolean mg1,
             String id2, Boolean ro2, Boolean hp2, Boolean mg2,
             boolean expectedEqual
@@ -54,7 +54,7 @@ class BitwardenAccessTest {
 
     @ParameterizedTest
     @MethodSource("hashCodePairs")
-    void testHashCodeConsistent(BitwardenAccess[] accesses) {
+    void test_hash_code_consistent(BitwardenAccess[] accesses) {
         assertEquals(accesses[0], accesses[1]);
         assertEquals(accesses[0].hashCode(), accesses[1].hashCode());
     }
@@ -65,7 +65,7 @@ class BitwardenAccessTest {
             "B, false, true,  false, id=B;ro=0;hp=1;mg=0",
             "C, true,  false, true,  id=C;ro=1;hp=0;mg=1"
     })
-    void testToString(String id, Boolean ro, Boolean hp, Boolean mg, String expected) {
+    void test_to_string(String id, Boolean ro, Boolean hp, Boolean mg, String expected) {
         BitwardenAccess access = create(id, ro, hp, mg);
         assertEquals(expected, access.toString());
     }
@@ -78,7 +78,7 @@ class BitwardenAccessTest {
     }
 
     @Test
-    void testEqualsWithNullOrDifferentClass() {
+    void test_equals_with_null_or_differentClass() {
         BitwardenAccess a = create("X", true, true, true);
 
         assertNotEquals(null, a);

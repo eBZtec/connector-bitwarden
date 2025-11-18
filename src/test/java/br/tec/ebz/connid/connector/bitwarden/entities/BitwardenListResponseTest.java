@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class BitwardenListResponseTest {
     @Test
-    void testGettersAndSetters() {
+    void test_getters_and_setters() {
         BitwardenListResponse<String> response = new BitwardenListResponse<>();
 
         String objectValue = "list";
@@ -22,7 +22,7 @@ public class BitwardenListResponseTest {
     }
 
     @Test
-    void testGenericTypeWorks() {
+    void test_generic_type_works() {
         BitwardenListResponse<Integer> intResponse = new BitwardenListResponse<>();
 
         List<Integer> numbers = List.of(1, 2, 3);
