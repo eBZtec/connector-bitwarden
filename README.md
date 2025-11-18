@@ -90,7 +90,7 @@ Implement [Association By Reference](https://docs.evolveum.com/midpoint/devel/de
 
 ### Maven
 
-* Download Connector for Bitwarden source code from Github.
+* Download Connector for Bitwarden source code from GitHub.
 * build connector with maven:
 ```
 mvn clean install -DskipTests=true
