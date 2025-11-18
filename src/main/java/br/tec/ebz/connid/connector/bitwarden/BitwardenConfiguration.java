@@ -19,15 +19,11 @@ package br.tec.ebz.connid.connector.bitwarden;
 import org.identityconnectors.common.security.GuardedString;
 import org.identityconnectors.framework.common.exceptions.ConfigurationException;
 import org.identityconnectors.framework.spi.AbstractConfiguration;
-import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.spi.ConfigurationProperty;
 
-import java.net.URI;
 import java.net.URL;
 
 public class BitwardenConfiguration extends AbstractConfiguration {
-
-    private static final Log LOG = Log.getLog(BitwardenConfiguration.class);
 
     private String authUrl;
     private String hostUrl;

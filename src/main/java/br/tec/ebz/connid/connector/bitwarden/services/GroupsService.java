@@ -2,7 +2,6 @@ package br.tec.ebz.connid.connector.bitwarden.services;
 
 import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenGroup;
 import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenListResponse;
-import br.tec.ebz.connid.connector.bitwarden.entities.BitwardenMember;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 

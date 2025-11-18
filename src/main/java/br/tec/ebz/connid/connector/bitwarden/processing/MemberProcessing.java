@@ -41,9 +41,9 @@ public class MemberProcessing extends ObjectProcessing {
         Set<Attribute> updatedAttributes = updateObjectAttributes(uid, attributeDeltas, currentObject);
         BitwardenMember member = translate(updatedAttributes);
 
-        membersService.update(uid.getUidValue(), member);
+        BitwardenMember memberUpdated = membersService.update(uid.getUidValue(), member);
 
-        LOG.ok("Member \"{0}\" updated successfully.", uid.getUidValue());
+        LOG.ok("Member \"{0}\" updated successfully.", memberUpdated.getId());
     }
 
     public void delete(Uid uid, OperationOptions options) {

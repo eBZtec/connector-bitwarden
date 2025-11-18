@@ -36,7 +36,6 @@ import org.identityconnectors.framework.spi.ConnectorClass;
 import org.identityconnectors.framework.spi.operations.*;
 
 import java.io.IOException;
-import java.net.ConnectException;
 import java.net.NoRouteToHostException;
 import java.net.SocketTimeoutException;
 import java.util.List;
@@ -185,7 +184,7 @@ public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp
         return schemaBuilder.build();
     }
 
-    protected static void handleConnectorException(Exception e, String message) {
+    private static void handleConnectorException(Exception e, String message) {
         if (e instanceof UnsupportedOperationException) {
             throw new UnsupportedOperationException(message);
         }
@@ -202,16 +201,12 @@ public class BitwardenConnector implements Connector, TestOp, CreateOp, DeleteOp
             throw new InvalidAttributeValueException(message + ". Status code response: " + ex.getResponse().getStatus() + ", response: " + ex.getMessage());
         }
 
-        if (e instanceof ConnectException) {
-            throw new ConnectorException(message);
-        }
-
         if (e instanceof IOException) {
             if ((e instanceof SocketTimeoutException || e instanceof NoRouteToHostException)) {
                 throw new OperationTimeoutException(message + ", timeout occured, reason: " + e.getMessage(), e);
             }
 
-            throw new ConnectorIOException(message + " IO exception occcured, reason: " + e.getMessage(), e);
+            throw new ConnectorIOException(message + " IO exception occurred, reason: " + e.getMessage(), e);
         }
 
         if (e instanceof NotAuthorizedException ex) {

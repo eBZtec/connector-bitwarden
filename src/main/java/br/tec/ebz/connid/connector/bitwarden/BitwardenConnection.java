@@ -22,8 +22,6 @@ import br.tec.ebz.connid.connector.bitwarden.services.GroupsService;
 import br.tec.ebz.connid.connector.bitwarden.services.MembersService;
 import org.identityconnectors.common.logging.Log;
 
-import java.net.MalformedURLException;
-
 public class BitwardenConnection extends ApiConnectionHandler {
 
     private static final Log LOG = Log.getLog(BitwardenConnection.class);
@@ -36,13 +34,11 @@ public class BitwardenConnection extends ApiConnectionHandler {
     private GroupsService groupsService;
     private CollectionsService collectionsService;
 
-    private BitwardenConfiguration configuration;
-
-    public BitwardenConnection(BitwardenConfiguration configuration) throws MalformedURLException {
+    public BitwardenConnection(BitwardenConfiguration configuration) {
         super(configuration);
     }
 
-    public void setupServices() throws MalformedURLException {
+    public void setupServices() {
         membersService = setupClient(MEMBERS_SERVICE);
         groupsService = setupClient(GROUPS_SERVICE);
         collectionsService = setupClient(COLLECTIONS_SERVICE);
@@ -62,8 +58,9 @@ public class BitwardenConnection extends ApiConnectionHandler {
     }
 
     public void dispose() {
-        this.configuration = null;
         membersService = null;
+        groupsService = null;
+        collectionsService = null;
 
         LOG.ok("Connector disposed successfully.");
     }
