@@ -116,7 +116,10 @@ export BW_BASE_URL="https://api.bitwarden.com"
 export BW_AUTH_URL="https://identity.bitwarden.com"
 export BW_CLIENT_ID="<YOUR CLIENT ID>"
 export BW_CLIENT_SECRET="<YOUR CLIENT SECRET>"
+export BW_COLLECTION_ID="<EXISTENT COLLECTION ID>"
 ```
+
+The API has some limitations, is not possible create collections, so we need to export an existent Collection ID in the environment variables, only for tests purposed.
 
 and then run:
 
