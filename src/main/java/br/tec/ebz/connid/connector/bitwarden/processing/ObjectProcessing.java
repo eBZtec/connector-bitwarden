@@ -98,6 +98,8 @@ public abstract class ObjectProcessing {
             }
         });
 
+        List<Object> values = new ArrayList<>();
+
         for (Attribute remAttr : removes) {
             if (COLLECTIONS.equals(remAttr.getName())) {
                 Set<String> idsToRemove = parseIds(remAttr.getValue());
@@ -105,7 +107,7 @@ public abstract class ObjectProcessing {
             } else {
                 Attribute oldAttr = AttributeUtil.find(remAttr.getName(), processedAttrs);
                 if (oldAttr != null) {
-                    List<Object> values = new ArrayList<>();
+                    values.clear();
                     if (oldAttr.getValue() != null) values.addAll(oldAttr.getValue());
                     if (remAttr.getValue() != null) values.removeAll(remAttr.getValue());
                     processedAttrs.remove(oldAttr);
@@ -130,7 +132,7 @@ public abstract class ObjectProcessing {
             } else {
                 Attribute oldAttr = AttributeUtil.find(addAttr.getName(), processedAttrs);
                 if (oldAttr != null) {
-                    List<Object> values = new ArrayList<>();
+                    values.clear();
                     if (oldAttr.getValue() != null) values.addAll(oldAttr.getValue());
                     if (addAttr.getValue() != null)  values.addAll(addAttr.getValue());
                     processedAttrs.remove(oldAttr);
