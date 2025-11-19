@@ -9,6 +9,7 @@ import org.identityconnectors.framework.common.exceptions.UnknownUidException;
 import org.identityconnectors.framework.common.objects.*;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public abstract class ObjectProcessing {
@@ -66,7 +67,7 @@ public abstract class ObjectProcessing {
         final String COLLECTIONS = GroupSchemaAttributes.COLLECTIONS; // "collections"
 
         Set<Attribute> processedAttrs = new HashSet<>();
-        Map<String, Flags> coll = new LinkedHashMap<>();
+        Map<String, Flags> coll = new ConcurrentHashMap<>();
 
         for (Attribute a : oldObject.getAttributes()) {
             if (a != null && COLLECTIONS.equals(a.getName())) {
@@ -171,7 +172,7 @@ public abstract class ObjectProcessing {
     }
 
     private static Map<String, Flags> parseCollections(List<Object> rawValues) {
-        Map<String, Flags> map = new LinkedHashMap<>();
+        Map<String, Flags> map = new ConcurrentHashMap<>();
         if (rawValues == null) return map;
         for (Object o : rawValues) {
             if (o == null) continue;

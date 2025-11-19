@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -51,7 +52,7 @@ public class BearerAuthInterceptorTest {
         BearerAuthInterceptor interceptor = new BearerAuthInterceptor(token);
         Message message = new MessageImpl();
 
-        Map<String, List<String>> headers = new HashMap<>();
+        Map<String, List<String>> headers = new ConcurrentHashMap<>();
         headers.put("Authorization", List.of("Bearer old-token"));
         message.put(Message.PROTOCOL_HEADERS, headers);
 
@@ -74,7 +75,7 @@ public class BearerAuthInterceptorTest {
         BearerAuthInterceptor interceptor = new BearerAuthInterceptor(token);
         Message message = new MessageImpl();
 
-        Map<String, List<String>> headers = new HashMap<>();
+        Map<String, List<String>> headers = new ConcurrentHashMap<>();
         headers.put("X-Custom-Header", List.of("value1", "value2"));
         message.put(Message.PROTOCOL_HEADERS, headers);
 

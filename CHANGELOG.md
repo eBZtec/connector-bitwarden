@@ -1,7 +1,7 @@
 ## [1.0.1] - 11-19-2025
 
 ### Added
-- More units and integrations tests with 99% code lines coverage
+- More units and integrations tests with 99% lines coverage
 
 ### Changed
 - pom.xml
