@@ -1,0 +1,23 @@
+{
+  "id" : "e2e4091b-edfb-385c-8901-e9cdab01a10d",
+  "request" : {
+    "url" : "/public/collections/00000000-0000-0000-0000-000000000000",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 404,
+    "bodyFileName" : "body-public-collections-00000000-0000-0000-0000-000000000000-95ckD.txt",
+    "headers" : {
+      "Accept-Ranges" : "bytes",
+      "Strict-Transport-Security" : "max-age=31536000",
+      "x-xss-protection" : "1; mode=block",
+      "x-content-type-options" : "nosniff",
+      "x-frame-options" : "SAMEORIGIN",
+      "x-rate-limit-reset" : "2025-12-02T17:51:00.0000000Z",
+      "x-rate-limit-limit" : "1m",
+      "x-rate-limit-remaining" : "499",
+      "Date" : "Tue, 02 Dec 2025 17:50:43 GMT"
+    }
+  },
+  "uuid" : "e2e4091b-edfb-385c-8901-e9cdab01a10d"
+}

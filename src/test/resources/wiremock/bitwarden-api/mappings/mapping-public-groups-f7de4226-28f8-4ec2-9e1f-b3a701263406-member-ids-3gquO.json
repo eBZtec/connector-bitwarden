@@ -1,0 +1,24 @@
+{
+  "id" : "cd89f925-dc73-3b62-9ab6-f5f6c7e31134",
+  "request" : {
+    "url" : "/public/groups/f7de4226-28f8-4ec2-9e1f-b3a701263406/member-ids",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-public-groups-f7de4226-28f8-4ec2-9e1f-b3a701263406-member-ids-3gquO.json",
+    "headers" : {
+      "Accept-Ranges" : "bytes",
+      "Strict-Transport-Security" : "max-age=31536000",
+      "x-xss-protection" : "1; mode=block",
+      "x-content-type-options" : "nosniff",
+      "x-frame-options" : "SAMEORIGIN",
+      "x-rate-limit-reset" : "2025-12-02T17:52:00.0000000Z",
+      "content-type" : "application/json; charset=utf-8",
+      "x-rate-limit-remaining" : "499",
+      "x-rate-limit-limit" : "1m",
+      "Date" : "Tue, 02 Dec 2025 17:51:11 GMT"
+    }
+  },
+  "uuid" : "cd89f925-dc73-3b62-9ab6-f5f6c7e31134"
+}

@@ -32,12 +32,9 @@ public class SearchGroupTest extends BitwardenConfigurationHandler{
     @BeforeEach
     public void generateId() {
         facade = getTestConnection();
-
-        int randomCode = new Random().nextInt(1000);
-
-        groupName = "Test Group" + randomCode;
-        userName = "Test User " + randomCode;
-        login = "test.user" + randomCode;
+        groupName = "Test Group Search";
+        userName = "Test User Search";
+        login = "test.user.search";
         email = login + "@example.com";
 
         objectsRepository = new ObjectsRepository(facade);
@@ -54,8 +51,6 @@ public class SearchGroupTest extends BitwardenConfigurationHandler{
     void should_create_a_group_create_a_member_with_the_group_and_get_the_member_groups_then_delete_member_and_group() {
         ConnectorFacade facade = getTestConnection();
 
-        Set<Attribute> attributes = new HashSet<>();
-
         BitwardenGroup group = new BitwardenGroup();
         group.setName(groupName);
         group.setExternalId(groupName);
@@ -66,7 +61,7 @@ public class SearchGroupTest extends BitwardenConfigurationHandler{
         List<String> newGroups = new ArrayList<>();
         newGroups.add(groupUid.getUidValue());
 
-        attributes = new HashSet<>();
+        Set<Attribute> attributes = new HashSet<>();
 
         attributes.add(AttributeBuilder.build(Name.NAME, email));
         attributes.add(AttributeBuilder.build(MemberSchemaAttributes.NAME, userName));

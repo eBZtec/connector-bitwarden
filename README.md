@@ -107,7 +107,7 @@ keytool -importcert -trustcacerts -alias isrg-root-x1 -file isrgrootx1.crt -keys
 
 * Copy/move connector-bitwarden-{version}.jar to ```{midPoint_home}/connid-connectors/``` directory
 
-### Run tests
+### Build
 
 Export the environment variables:
 
@@ -126,3 +126,15 @@ and then run:
 ```bash
 mvn clean install
 ```
+
+### Build (offline)
+
+Don't worry if you don't have a test environment for build the connector using some CI/CD pipeline.
+
+You can run a shell script that implements two Wiremock servers, one for the API, other for Authentication and then run the tests, for this just run the following command:
+
+```
+./scripts/bitwarden-wiremock-offline.sh
+```
+
+This script above will set up everything for you, the servers will run on port 18081 and 18082 respectively, you don't need to set any kind of secret, the Wiremock will do the tests.

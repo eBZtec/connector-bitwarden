@@ -1,0 +1,29 @@
+{
+  "id" : "ee4af0d7-a7de-37b1-a4cf-87e9d8e951db",
+  "request" : {
+    "url" : "/public/members/f9b651d7-5224-409d-9b97-b3a701265db8",
+    "method" : "PUT",
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\"object\":\"member\",\"id\":\"f9b651d7-5224-409d-9b97-b3a701265db8\",\"name\":null,\"email\":\"test.user.update@example.com\",\"twoFactorEnabled\":false,\"status\":0,\"collections\":[],\"resetPasswordEnrolled\":false,\"ssoExternalId\":null,\"type\":1,\"externalId\":null,\"groups\":[\"fe32a3ef-33f9-428d-a1af-b3a701265f51\"],\"permissions\":null}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ]
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-public-members-f9b651d7-5224-409d-9b97-b3a701265db8-jghBK.json",
+    "headers" : {
+      "Accept-Ranges" : "bytes",
+      "Strict-Transport-Security" : "max-age=31536000",
+      "x-content-type-options" : "nosniff",
+      "x-xss-protection" : "1; mode=block",
+      "x-frame-options" : "SAMEORIGIN",
+      "x-rate-limit-reset" : "2025-12-02T17:52:00.0000000Z",
+      "content-type" : "application/json; charset=utf-8",
+      "x-rate-limit-limit" : "1m",
+      "x-rate-limit-remaining" : "59",
+      "Date" : "Tue, 02 Dec 2025 17:51:49 GMT"
+    }
+  },
+  "uuid" : "ee4af0d7-a7de-37b1-a4cf-87e9d8e951db"
+}

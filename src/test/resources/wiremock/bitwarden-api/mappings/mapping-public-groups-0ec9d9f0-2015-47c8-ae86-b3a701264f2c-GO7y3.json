@@ -1,0 +1,23 @@
+{
+  "id" : "5a48cbf3-ba12-3935-8a65-69aa3c96fc52",
+  "request" : {
+    "url" : "/public/groups/0ec9d9f0-2015-47c8-ae86-b3a701264f2c",
+    "method" : "DELETE"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-public-groups-0ec9d9f0-2015-47c8-ae86-b3a701264f2c-GO7y3.txt",
+    "headers" : {
+      "Accept-Ranges" : "bytes",
+      "Strict-Transport-Security" : "max-age=31536000",
+      "x-xss-protection" : "1; mode=block",
+      "x-content-type-options" : "nosniff",
+      "x-frame-options" : "SAMEORIGIN",
+      "x-rate-limit-reset" : "2025-12-02T17:52:00.0000000Z",
+      "x-rate-limit-limit" : "1m",
+      "x-rate-limit-remaining" : "59",
+      "Date" : "Tue, 02 Dec 2025 17:51:39 GMT"
+    }
+  },
+  "uuid" : "5a48cbf3-ba12-3935-8a65-69aa3c96fc52"
+}

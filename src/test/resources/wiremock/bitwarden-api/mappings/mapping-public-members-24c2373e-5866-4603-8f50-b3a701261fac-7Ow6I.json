@@ -1,0 +1,23 @@
+{
+  "id" : "0d1f7d19-c30c-363c-9bb8-83182641b167",
+  "request" : {
+    "url" : "/public/members/24c2373e-5866-4603-8f50-b3a701261fac",
+    "method" : "DELETE"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-public-members-24c2373e-5866-4603-8f50-b3a701261fac-7Ow6I.txt",
+    "headers" : {
+      "Accept-Ranges" : "bytes",
+      "Strict-Transport-Security" : "max-age=31536000",
+      "x-xss-protection" : "1; mode=block",
+      "x-content-type-options" : "nosniff",
+      "x-frame-options" : "SAMEORIGIN",
+      "x-rate-limit-reset" : "2025-12-02T17:51:00.0000000Z",
+      "x-rate-limit-limit" : "1m",
+      "x-rate-limit-remaining" : "59",
+      "Date" : "Tue, 02 Dec 2025 17:50:55 GMT"
+    }
+  },
+  "uuid" : "0d1f7d19-c30c-363c-9bb8-83182641b167"
+}

@@ -1,0 +1,29 @@
+{
+  "id" : "18f67d49-c0f2-3ed3-a82e-9d37add659f5",
+  "request" : {
+    "url" : "/public/members",
+    "method" : "POST",
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\"object\":\"member\",\"id\":null,\"name\":\"Test User Member\",\"email\":\"test.user.member@example.com\",\"twoFactorEnabled\":false,\"status\":0,\"collections\":[],\"resetPasswordEnrolled\":false,\"ssoExternalId\":null,\"type\":4,\"externalId\":null,\"groups\":[],\"permissions\":{\"accessEventsLogs\":null,\"accessImportExport\":false,\"accessReports\":false,\"createNewCollection\":false,\"editAnyCollection\":false,\"deleteAnyCollection\":false,\"manageGroups\":false,\"managePolicies\":false,\"manageSso\":false,\"manageUsers\":true,\"manageResetPassword\":false,\"manageScim\":false}}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ]
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-public-members-rZGHC.json",
+    "headers" : {
+      "Accept-Ranges" : "bytes",
+      "Strict-Transport-Security" : "max-age=31536000",
+      "x-xss-protection" : "1; mode=block",
+      "x-content-type-options" : "nosniff",
+      "x-frame-options" : "SAMEORIGIN",
+      "x-rate-limit-reset" : "2025-12-02T17:51:00.0000000Z",
+      "content-type" : "application/json; charset=utf-8",
+      "x-rate-limit-limit" : "1m",
+      "x-rate-limit-remaining" : "59",
+      "Date" : "Tue, 02 Dec 2025 17:50:52 GMT"
+    }
+  },
+  "uuid" : "18f67d49-c0f2-3ed3-a82e-9d37add659f5"
+}

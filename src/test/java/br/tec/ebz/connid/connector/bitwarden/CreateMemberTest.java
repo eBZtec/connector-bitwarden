@@ -21,9 +21,8 @@ public class CreateMemberTest extends BitwardenConfigurationHandler{
 
     @BeforeEach
     public void generateId() {
-        int randomCode = new Random().nextInt(1000);
-        name = "Test User" + randomCode;
-        login = "test.user" + randomCode;
+        name = "Test UserCreation";
+        login = "test.user.cration";
         email = login + "@example.com";
     }
 

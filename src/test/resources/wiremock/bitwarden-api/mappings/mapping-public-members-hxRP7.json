@@ -1,0 +1,29 @@
+{
+  "id" : "88614fa0-cba9-3fd8-82e8-73a764fb80ee",
+  "request" : {
+    "url" : "/public/members",
+    "method" : "POST",
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\"object\":\"member\",\"id\":null,\"name\":\"Test User Search\",\"email\":\"test.user.search@example.com\",\"twoFactorEnabled\":false,\"status\":0,\"collections\":[],\"resetPasswordEnrolled\":false,\"ssoExternalId\":\"test.user.search\",\"type\":1,\"externalId\":null,\"groups\":[\"0ec9d9f0-2015-47c8-ae86-b3a701264f2c\"],\"permissions\":null}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ]
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-public-members-hxRP7.json",
+    "headers" : {
+      "Accept-Ranges" : "bytes",
+      "Strict-Transport-Security" : "max-age=31536000",
+      "x-content-type-options" : "nosniff",
+      "x-xss-protection" : "1; mode=block",
+      "x-frame-options" : "SAMEORIGIN",
+      "x-rate-limit-reset" : "2025-12-02T17:52:00.0000000Z",
+      "content-type" : "application/json; charset=utf-8",
+      "x-rate-limit-limit" : "1m",
+      "x-rate-limit-remaining" : "56",
+      "Date" : "Tue, 02 Dec 2025 17:51:34 GMT"
+    }
+  },
+  "uuid" : "88614fa0-cba9-3fd8-82e8-73a764fb80ee"
+}

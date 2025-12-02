@@ -1,0 +1,29 @@
+{
+  "id" : "eb660a54-4eb9-334b-8776-bed99db92bbb",
+  "request" : {
+    "url" : "/connect/token",
+    "method" : "POST",
+    "bodyPatterns" : [ {
+      "equalTo" : "grant_type=client_credentials&scope=api.organization&client_id=organization.078bc13d-07f4-42df-b751-b34500e27ff3&client_secret=wrong-password"
+    } ]
+  },
+  "response" : {
+    "status" : 400,
+    "bodyFileName" : "body-connect-token-kEqm0.json",
+    "headers" : {
+      "date" : "Tue, 02 Dec 2025 17:51:24 GMT",
+      "x-frame-options" : "SAMEORIGIN",
+      "x-served-by" : "cache-pdk-katl1840093-PDK",
+      "x-cache-hits" : "0",
+      "strict-transport-security" : "max-age=31557600",
+      "pragma" : "no-cache",
+      "x-content-type-options" : "nosniff",
+      "x-xss-protection" : "1; mode=block",
+      "content-type" : "application/json; charset=UTF-8",
+      "x-cache" : "MISS",
+      "cache-control" : "no-store, no-cache, max-age=0",
+      "accept-ranges" : "bytes"
+    }
+  },
+  "uuid" : "eb660a54-4eb9-334b-8776-bed99db92bbb"
+}

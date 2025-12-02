@@ -1,0 +1,23 @@
+{
+  "id" : "3cc3f1e9-1e5b-3cc8-b05f-12c2be64b3de",
+  "request" : {
+    "url" : "/public/groups/00000000-0000-0000-0000-000000000000",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 404,
+    "bodyFileName" : "body-public-groups-00000000-0000-0000-0000-000000000000-9BLxo.txt",
+    "headers" : {
+      "Accept-Ranges" : "bytes",
+      "Strict-Transport-Security" : "max-age=31536000",
+      "x-xss-protection" : "1; mode=block",
+      "x-content-type-options" : "nosniff",
+      "x-frame-options" : "SAMEORIGIN",
+      "x-rate-limit-reset" : "2025-12-02T17:52:00.0000000Z",
+      "x-rate-limit-limit" : "1m",
+      "x-rate-limit-remaining" : "499",
+      "Date" : "Tue, 02 Dec 2025 17:51:43 GMT"
+    }
+  },
+  "uuid" : "3cc3f1e9-1e5b-3cc8-b05f-12c2be64b3de"
+}

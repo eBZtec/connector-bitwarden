@@ -1,0 +1,29 @@
+{
+  "id" : "8ebe1495-9c5a-3cc2-8f12-84b49ee9c695",
+  "request" : {
+    "url" : "/public/groups/f7de4226-28f8-4ec2-9e1f-b3a701263406",
+    "method" : "PUT",
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\"id\":\"f7de4226-28f8-4ec2-9e1f-b3a701263406\",\"object\":\"group\",\"name\":\"Test Group Update\",\"externalId\":\"Test Group Update\",\"collections\":[{\"id\":\"1858ba2d-e5eb-493b-86e5-b345012d9c93\",\"readOnly\":false,\"hidePasswords\":true,\"manage\":false}],\"members\":[]}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ]
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-public-groups-f7de4226-28f8-4ec2-9e1f-b3a701263406-XcKyd.json",
+    "headers" : {
+      "Accept-Ranges" : "bytes",
+      "Strict-Transport-Security" : "max-age=31536000",
+      "x-content-type-options" : "nosniff",
+      "x-xss-protection" : "1; mode=block",
+      "x-frame-options" : "SAMEORIGIN",
+      "x-rate-limit-reset" : "2025-12-02T17:52:00.0000000Z",
+      "content-type" : "application/json; charset=utf-8",
+      "x-rate-limit-limit" : "1m",
+      "x-rate-limit-remaining" : "59",
+      "Date" : "Tue, 02 Dec 2025 17:51:13 GMT"
+    }
+  },
+  "uuid" : "8ebe1495-9c5a-3cc2-8f12-84b49ee9c695"
+}

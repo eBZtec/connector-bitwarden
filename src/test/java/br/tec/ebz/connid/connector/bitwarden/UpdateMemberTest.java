@@ -23,9 +23,8 @@ public class UpdateMemberTest extends BitwardenConfigurationHandler {
 
     @BeforeEach
     public void generateId() {
-        int randomCode = new Random().nextInt(1000);
-        name = "Test User" + randomCode;
-        login = "test.user" + randomCode;
+        name = "Test User Update";
+        login = "test.user.update";
         email = login + "@example.com";
     }
 
@@ -48,7 +47,7 @@ public class UpdateMemberTest extends BitwardenConfigurationHandler {
 
         assertNotNull(uid, "Uid cannot be null");
 
-        Set<AttributeDelta> deltaAttributes = new HashSet<AttributeDelta>();
+        Set<AttributeDelta> deltaAttributes = new HashSet<>();
 
         // Create group
         Set<Attribute> groupAttributes = new HashSet<>();

@@ -18,8 +18,7 @@ public class UpdateGroupTest extends BitwardenConfigurationHandler{
 
     @BeforeEach
     public void generateId() {
-        int randomCode = new Random().nextInt(1000);
-        name = "Test Group" + randomCode;
+        name = "Test Group Update";
     }
 
 

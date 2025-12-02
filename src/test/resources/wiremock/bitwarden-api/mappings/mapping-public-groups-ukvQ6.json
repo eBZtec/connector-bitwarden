@@ -1,0 +1,29 @@
+{
+  "id" : "78966447-42e8-365d-b2c2-727e0338e65d",
+  "request" : {
+    "url" : "/public/groups",
+    "method" : "POST",
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\"id\":null,\"object\":\"group\",\"name\":\"Test Group Update\",\"externalId\":\"Test Group Update\",\"collections\":[{\"id\":\"1858ba2d-e5eb-493b-86e5-b345012d9c93\",\"readOnly\":true,\"hidePasswords\":true,\"manage\":false}],\"members\":null}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ]
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-public-groups-ukvQ6.json",
+    "headers" : {
+      "Accept-Ranges" : "bytes",
+      "Strict-Transport-Security" : "max-age=31536000",
+      "x-xss-protection" : "1; mode=block",
+      "x-content-type-options" : "nosniff",
+      "x-frame-options" : "SAMEORIGIN",
+      "x-rate-limit-reset" : "2025-12-02T17:52:00.0000000Z",
+      "content-type" : "application/json; charset=utf-8",
+      "x-rate-limit-limit" : "1m",
+      "x-rate-limit-remaining" : "58",
+      "Date" : "Tue, 02 Dec 2025 17:51:09 GMT"
+    }
+  },
+  "uuid" : "78966447-42e8-365d-b2c2-727e0338e65d"
+}

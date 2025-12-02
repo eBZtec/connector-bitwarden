@@ -1,0 +1,24 @@
+{
+  "id" : "b054a28b-8022-3f83-86fa-2b419431060e",
+  "request" : {
+    "url" : "/public/groups",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-public-groups-E16AH.json",
+    "headers" : {
+      "Accept-Ranges" : "bytes",
+      "Strict-Transport-Security" : "max-age=31536000",
+      "x-xss-protection" : "1; mode=block",
+      "x-content-type-options" : "nosniff",
+      "x-frame-options" : "SAMEORIGIN",
+      "x-rate-limit-reset" : "2025-12-02T17:52:00.0000000Z",
+      "content-type" : "application/json; charset=utf-8",
+      "x-rate-limit-remaining" : "499",
+      "x-rate-limit-limit" : "1m",
+      "Date" : "Tue, 02 Dec 2025 17:51:41 GMT"
+    }
+  },
+  "uuid" : "b054a28b-8022-3f83-86fa-2b419431060e"
+}

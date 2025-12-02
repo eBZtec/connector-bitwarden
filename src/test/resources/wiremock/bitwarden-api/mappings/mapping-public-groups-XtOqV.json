@@ -1,0 +1,29 @@
+{
+  "id" : "429c45b3-21c5-3839-a071-578e17e94fa6",
+  "request" : {
+    "url" : "/public/groups",
+    "method" : "POST",
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\"id\":null,\"object\":\"group\",\"name\":\"Test Group 0001\",\"externalId\":\"Test Group 0001\",\"collections\":[],\"members\":null}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ]
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-public-groups-XtOqV.json",
+    "headers" : {
+      "Accept-Ranges" : "bytes",
+      "Strict-Transport-Security" : "max-age=31536000",
+      "x-xss-protection" : "1; mode=block",
+      "x-content-type-options" : "nosniff",
+      "x-frame-options" : "SAMEORIGIN",
+      "x-rate-limit-reset" : "2025-12-02T17:51:00.0000000Z",
+      "content-type" : "application/json; charset=utf-8",
+      "x-rate-limit-limit" : "1m",
+      "x-rate-limit-remaining" : "59",
+      "Date" : "Tue, 02 Dec 2025 17:50:57 GMT"
+    }
+  },
+  "uuid" : "429c45b3-21c5-3839-a071-578e17e94fa6"
+}

@@ -1,0 +1,24 @@
+{
+  "id" : "3c21e351-146b-3c45-86be-1eba59930abb",
+  "request" : {
+    "url" : "/public/collections/1858ba2d-e5eb-493b-86e5-b345012d9c93",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-public-collections-1858ba2d-e5eb-493b-86e5-b345012d9c93-Rz1Zl.json",
+    "headers" : {
+      "Accept-Ranges" : "bytes",
+      "Strict-Transport-Security" : "max-age=31536000",
+      "x-xss-protection" : "1; mode=block",
+      "x-content-type-options" : "nosniff",
+      "x-frame-options" : "SAMEORIGIN",
+      "x-rate-limit-reset" : "2025-12-02T17:51:00.0000000Z",
+      "content-type" : "application/json; charset=utf-8",
+      "x-rate-limit-remaining" : "499",
+      "x-rate-limit-limit" : "1m",
+      "Date" : "Tue, 02 Dec 2025 17:50:39 GMT"
+    }
+  },
+  "uuid" : "3c21e351-146b-3c45-86be-1eba59930abb"
+}

@@ -16,15 +16,11 @@ import org.identityconnectors.framework.common.objects.filter.EqualsFilter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-
-import java.util.Random;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class SearchMemberTest extends BitwardenConfigurationHandler{
     private String email;
     private String userName;
-    private String login;
     private ConnectorFacade facade;
     private ListResultHandler handler;
     private ObjectsRepository objectsRepository;
@@ -33,11 +29,8 @@ public class SearchMemberTest extends BitwardenConfigurationHandler{
     public void generateId() {
         facade = getTestConnection();
 
-        int randomCode = new Random().nextInt(1000);
-
-        userName = "Test User " + randomCode;
-        login = "test.user" + randomCode;
-        email = login + "@example.com";
+        userName = "Test User Member";
+        email = "test.user.member@example.com";
 
         objectsRepository = new ObjectsRepository(facade);
         handler = new ListResultHandler();

@@ -1,0 +1,23 @@
+{
+  "id" : "faef0cd3-4fc8-3ed3-8640-6582cab539f6",
+  "request" : {
+    "url" : "/public/members/00000000-0000-0000-0000-000000000000",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 404,
+    "bodyFileName" : "body-public-members-00000000-0000-0000-0000-000000000000-JUiAs.txt",
+    "headers" : {
+      "Accept-Ranges" : "bytes",
+      "Strict-Transport-Security" : "max-age=31536000",
+      "x-xss-protection" : "1; mode=block",
+      "x-content-type-options" : "nosniff",
+      "x-frame-options" : "SAMEORIGIN",
+      "x-rate-limit-reset" : "2025-12-02T17:51:00.0000000Z",
+      "x-rate-limit-limit" : "1m",
+      "x-rate-limit-remaining" : "499",
+      "Date" : "Tue, 02 Dec 2025 17:50:49 GMT"
+    }
+  },
+  "uuid" : "faef0cd3-4fc8-3ed3-8640-6582cab539f6"
+}

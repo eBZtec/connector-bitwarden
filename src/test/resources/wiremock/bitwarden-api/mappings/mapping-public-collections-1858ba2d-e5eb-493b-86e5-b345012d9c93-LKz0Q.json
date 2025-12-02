@@ -1,0 +1,29 @@
+{
+  "id" : "c8b19a8f-edd7-37a3-bc49-01a9d1f1b6da",
+  "request" : {
+    "url" : "/public/collections/1858ba2d-e5eb-493b-86e5-b345012d9c93",
+    "method" : "PUT",
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\"id\":\"1858ba2d-e5eb-493b-86e5-b345012d9c93\",\"externalId\":\"updated\",\"groups\":[{\"id\":\"f49b27a9-e122-4403-b3f7-b39400f88a14\",\"readOnly\":true,\"hidePasswords\":false,\"manage\":false},{\"id\":\"050ccf87-53bb-406d-82cb-b39400f93192\",\"readOnly\":false,\"hidePasswords\":false,\"manage\":true},{\"id\":\"cdf212a8-594e-43c2-ba2d-b3950149ddf6\",\"readOnly\":true,\"hidePasswords\":true,\"manage\":false},{\"id\":\"40e0a67e-0589-4e5d-a97b-b398012904c5\",\"readOnly\":false,\"hidePasswords\":true,\"manage\":false}],\"object\":\"collection\"}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ]
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-public-collections-1858ba2d-e5eb-493b-86e5-b345012d9c93-LKz0Q.json",
+    "headers" : {
+      "Accept-Ranges" : "bytes",
+      "Strict-Transport-Security" : "max-age=31536000",
+      "x-content-type-options" : "nosniff",
+      "x-xss-protection" : "1; mode=block",
+      "x-frame-options" : "SAMEORIGIN",
+      "x-rate-limit-reset" : "2025-12-02T17:51:00.0000000Z",
+      "content-type" : "application/json; charset=utf-8",
+      "x-rate-limit-remaining" : "59",
+      "x-rate-limit-limit" : "1m",
+      "Date" : "Tue, 02 Dec 2025 17:50:40 GMT"
+    }
+  },
+  "uuid" : "c8b19a8f-edd7-37a3-bc49-01a9d1f1b6da"
+}

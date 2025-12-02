@@ -1,0 +1,29 @@
+{
+  "id" : "1410b5cd-1426-3a0b-a910-43cee9bfacda",
+  "request" : {
+    "url" : "/connect/token",
+    "method" : "POST",
+    "bodyPatterns" : [ {
+      "doesNotContain" : "wrong-password"
+    } ]
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-connect-token-Cxomo.json",
+    "headers" : {
+      "date" : "Tue, 02 Dec 2025 17:50:38 GMT",
+      "x-frame-options" : "SAMEORIGIN",
+      "x-served-by" : "cache-pdk-katl1840059-PDK",
+      "x-cache-hits" : "0",
+      "strict-transport-security" : "max-age=31557600",
+      "pragma" : "no-cache",
+      "x-content-type-options" : "nosniff",
+      "x-xss-protection" : "1; mode=block",
+      "content-type" : "application/json; charset=UTF-8",
+      "x-cache" : "MISS",
+      "cache-control" : "no-store, no-cache, max-age=0",
+      "accept-ranges" : "bytes"
+    }
+  },
+  "uuid" : "1410b5cd-1426-3a0b-a910-43cee9bfacda"
+}
