@@ -42,7 +42,7 @@ cleanup() {
 trap cleanup EXIT
 
 echo "Running Maven tests (OFFLINE playback)..."
-echo "  Command: mvn verify $*"
+echo "  Command: mvn test $*"
 echo
 
 cd "$ROOT_DIR"
