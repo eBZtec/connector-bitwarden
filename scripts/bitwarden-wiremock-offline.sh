@@ -12,6 +12,9 @@ AUTH_PORT=18082
 
 export BW_BASE_URL="http://localhost:${API_PORT}"
 export BW_AUTH_URL="http://localhost:${AUTH_PORT}"
+export BW_CLIENT_ID="fake"
+export BW_CLIENT_SECRET="fake"
+export BW_COLLECTION_ID="1858ba2d-e5eb-493b-86e5-b345012d9c93"
 
 echo "Running Bitwarden tests in OFFLINE mode via WireMock..."
 echo "  WireMock JAR: $WIREMOCK_JAR"
@@ -39,11 +42,11 @@ cleanup() {
 trap cleanup EXIT
 
 echo "Running Maven tests (OFFLINE playback)..."
-echo "  Command: mvn test $*"
+echo "  Command: mvn verify $*"
 echo
 
 cd "$ROOT_DIR"
-mvn clean verify "$@"
+mvn clean test "$@"
 
 echo
 echo "Offline run finished (no real Bitwarden calls)."
