@@ -42,11 +42,11 @@ cleanup() {
 trap cleanup EXIT
 
 echo "Running Maven tests (OFFLINE playback)..."
-echo "  Command: mvn test $*"
+echo "  Command: mvn verify $*"
 echo
 
 cd "$ROOT_DIR"
-mvn clean test "$@"
+mvn clean verify "$@"
 
 echo
 echo "Offline run finished (no real Bitwarden calls)."
