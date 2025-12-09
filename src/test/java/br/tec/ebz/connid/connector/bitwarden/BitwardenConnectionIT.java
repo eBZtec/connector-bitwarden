@@ -3,14 +3,12 @@ package br.tec.ebz.connid.connector.bitwarden;
 import br.tec.ebz.connid.connector.bitwarden.services.MembersService;
 import org.junit.jupiter.api.Test;
 
-import java.net.MalformedURLException;
-
 import static org.junit.jupiter.api.Assertions.*;
 
-class BitwardenConnectionTest extends BitwardenConfigurationHandler {
+class BitwardenConnectionIT extends BitwardenConfigurationHandler {
 
     @Test
-    void should_create_connection() throws MalformedURLException {
+    void should_create_connection() {
         BitwardenConnection connection = new BitwardenConnection(configFromEnv());
 
         connection.setupServices();

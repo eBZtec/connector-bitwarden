@@ -4,7 +4,7 @@ import br.tec.ebz.connid.connector.bitwarden.BitwardenConfigurationHandler;
 import org.identityconnectors.framework.api.ConnectorFacade;
 import org.junit.jupiter.api.Test;
 
-public class TestConnectionIT extends BitwardenConfigurationHandler {
+public class PingConnectionIT extends BitwardenConfigurationHandler {
 
     @Test
     void should_connect_to_bitwarden_server() {

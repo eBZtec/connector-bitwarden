@@ -11,7 +11,7 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class UpdateGroupTest extends BitwardenConfigurationHandler{
+public class UpdateGroupIT extends BitwardenConfigurationHandler{
 
     private String name;
     private static final String TEST_COLLECTION_ID = "1858ba2d-e5eb-493b-86e5-b345012d9c93";
