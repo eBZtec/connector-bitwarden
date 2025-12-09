@@ -43,6 +43,7 @@
         <jacoco.plugin.version>0.8.13</jacoco.plugin.version>
         <maven.surefire.plugin.version>3.2.5</maven.surefire.plugin.version>
         <mockito.version>5.12.0</mockito.version>
+        <process.exec.version>3.3.0</process.exec.version>
     </properties>
 
     <repositories>
@@ -91,6 +92,13 @@
                     <includes>
                         <include>**/*IT.java</include>
                     </includes>
+                    <environmentVariables>
+                        <BW_BASE_URL>http://localhost:18081</BW_BASE_URL>
+                        <BW_AUTH_URL>http://localhost:18082</BW_AUTH_URL>
+                        <BW_CLIENT_ID>fake</BW_CLIENT_ID>
+                        <BW_CLIENT_SECRET>fake</BW_CLIENT_SECRET>
+                        <BW_COLLECTION_ID>1858ba2d-e5eb-493b-86e5-b345012d9c93</BW_COLLECTION_ID>
+                    </environmentVariables>
                 </configuration>
                 <executions>
                     <execution>
@@ -137,6 +145,80 @@
                                     </limits>
                                 </rule>
                             </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>${process.exec.version}</version>
+
+                <executions>
+                    <execution>
+                        <id>start-bitwarden-api-server</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>java</executable>
+                            <arguments>
+                                <argument>-jar</argument>
+                                <argument>${project.basedir}/tools/wiremock-standalone-3.13.2.jar</argument>
+                                <argument>--port</argument>
+                                <argument>18081</argument>
+                                <argument>--root-dir</argument>
+                                <argument>${project.basedir}/src/test/resources/wiremock/bitwarden-api</argument>
+                            </arguments>
+                            <async>true</async>
+                            <asyncDestroyOnShutdown>true</asyncDestroyOnShutdown>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>start-bitwarden-auth-server</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>java</executable>
+                            <arguments>
+                                <argument>-jar</argument>
+                                <argument>${project.basedir}/tools/wiremock-standalone-3.13.2.jar</argument>
+                                <argument>--port</argument>
+                                <argument>18082</argument>
+                                <argument>--root-dir</argument>
+                                <argument>${project.basedir}/src/test/resources/wiremock/bitwarden-auth</argument>
+                            </arguments>
+                            <async>true</async>
+                            <asyncDestroyOnShutdown>true</asyncDestroyOnShutdown>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>stop-bitwarden-api-server</id>
+                        <phase>post-integration-test</phase>
+                        <goals><goal>exec</goal></goals>
+                        <configuration>
+                            <executable>curl</executable>
+                            <arguments>
+                                <argument>-X</argument><argument>POST</argument>
+                                <argument>http://localhost:18081/__admin/shutdown</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>stop-bitwarden-auth-server</id>
+                        <phase>post-integration-test</phase>
+                        <goals><goal>exec</goal></goals>
+                        <configuration>
+                            <executable>curl</executable>
+                            <arguments>
+                                <argument>-X</argument><argument>POST</argument>
+                                <argument>http://localhost:18082/__admin/shutdown</argument>
+                            </arguments>
                         </configuration>
                     </execution>
                 </executions>

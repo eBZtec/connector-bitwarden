@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CollectionsProcessingTest extends BitwardenConfigurationHandler {
+class CollectionsProcessingIT extends BitwardenConfigurationHandler {
     private static final String COLLECTION_ID = "1858ba2d-e5eb-493b-86e5-b345012d9c93";
 
     @Test

@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SearchMemberTest extends BitwardenConfigurationHandler{
+public class SearchMemberIT extends BitwardenConfigurationHandler{
     private String email;
     private String userName;
     private ConnectorFacade facade;

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SchemaGroupTest extends BitwardenConfigurationHandler{
+public class SchemaGroupIT extends BitwardenConfigurationHandler{
     private ConnectorFacade facade;
 
     @BeforeEach

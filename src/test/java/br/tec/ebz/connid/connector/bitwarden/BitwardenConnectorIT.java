@@ -20,7 +20,7 @@ import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class BitwardenConnectorTest extends BitwardenConfigurationHandler{
+class BitwardenConnectorIT extends BitwardenConfigurationHandler{
 
     private void setField(Object target, String fieldName, Object value) throws Exception {
         Field f = BitwardenConnector.class.getDeclaredField(fieldName);

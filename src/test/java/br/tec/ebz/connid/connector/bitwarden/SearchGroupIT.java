@@ -19,7 +19,7 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SearchGroupTest extends BitwardenConfigurationHandler{
+public class SearchGroupIT extends BitwardenConfigurationHandler{
 
     private String email;
     private String groupName;

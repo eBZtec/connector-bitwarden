@@ -14,7 +14,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
-public class UpdateCollectionTest extends BitwardenConfigurationHandler{
+public class UpdateCollectionIT extends BitwardenConfigurationHandler{
 
     private ConnectorFacade facade;
     private String collectionID;

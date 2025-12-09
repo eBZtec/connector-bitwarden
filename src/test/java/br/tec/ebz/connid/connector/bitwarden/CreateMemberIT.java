@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 
-public class CreateMemberTest extends BitwardenConfigurationHandler{
+public class CreateMemberIT extends BitwardenConfigurationHandler{
 
 
     private String email;

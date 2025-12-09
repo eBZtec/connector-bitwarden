@@ -13,7 +13,7 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class CreateGroupTest extends BitwardenConfigurationHandler{
+public class CreateGroupIT extends BitwardenConfigurationHandler{
 
     private String name;
 

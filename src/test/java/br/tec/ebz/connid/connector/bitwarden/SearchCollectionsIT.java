@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
-public class SearchCollectionsTest extends BitwardenConfigurationHandler{
+public class SearchCollectionsIT extends BitwardenConfigurationHandler{
     private ConnectorFacade facade;
     private ListResultHandler handler;
     private String collectionID;
