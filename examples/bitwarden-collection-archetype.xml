@@ -1,0 +1,44 @@
+<archetype xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
+	xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
+	xmlns:org="http://midpoint.evolveum.com/xml/ns/public/common/org-3">
+	<archetype xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3" xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3" xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3" xmlns:org="http://midpoint.evolveum.com/xml/ns/public/common/org-3" xmlns:q="http://prism.evolveum.com/xml/ns/public/query-3" xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3" xmlns:t="http://prism.evolveum.com/xml/ns/public/types-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" oid="122a3c24-a50f-4595-a1b7-847c0d0764de">
+    <name>Bitwarden Collection Archetype</name>
+    <assignment>
+        <activation>
+            <effectiveStatus>enabled</effectiveStatus>
+        </activation>
+        <assignmentRelation>
+            <holderType>c:RoleType</holderType>
+        </assignmentRelation>
+    </assignment>
+    <iteration>0</iteration>
+    <iterationToken/>
+    <activation>
+        <effectiveStatus>enabled</effectiveStatus>
+    </activation>
+    <inducement>
+        <construction>
+            <resourceRef oid="089d0c9a-9938-48c7-a36f-3dc78a520b82" relation="org:default" type="c:ResourceType">
+                <!-- Bitwarden -->
+            </resourceRef>
+            <kind>generic</kind>
+            <intent>default</intent>
+        </construction>
+        <focusType>c:ServiceType</focusType>
+    </inducement>
+    <archetypePolicy>
+        <display>
+            <label>Bitwarden Collection Archetype</label>
+            <singularLabel>Bitwarden Collection Archetype</singularLabel>
+            <pluralLabel>Bitwarden Collections Archetype</pluralLabel>
+            <icon>
+                <cssClass>fa-solid fa-grip</cssClass>
+                <color>#6dc0d5</color>
+            </icon>
+        </display>
+    </archetypePolicy>
+    <superArchetypeRef oid="00000000-0000-0000-0000-000000000329" relation="org:default" type="c:ArchetypeType">
+        <!-- Application -->
+    </superArchetypeRef>
+</archetype>
+
