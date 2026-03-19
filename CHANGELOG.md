@@ -1,3 +1,7 @@
+## [1.0.2] - 03-19-2025
+
+- Dependencies updated
+
 ## [1.0.1] - 11-19-2025
 
 ### Added
@@ -5,7 +9,7 @@
 
 ### Changed
 - pom.xml
-    - Upgraded wiremock version to 3.13.2
+    - Upgraded Wiremock version to 3.13.2
 
 ### Fixed
 - Performance and multithreading issues
