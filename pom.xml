@@ -26,7 +26,7 @@
 
     <groupId>br.tec.ebz.connid.connector</groupId>
     <artifactId>connector-bitwarden</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <packaging>jar</packaging>
 
     <name>Bitwarden</name>
@@ -38,7 +38,7 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <cxf.version>4.1.2</cxf.version>
-        <jackson.version>2.15.3</jackson.version>
+        <jackson.version>2.21.1</jackson.version>
         <junit.version>5.13.4</junit.version>
         <jacoco.plugin.version>0.8.13</jacoco.plugin.version>
         <maven.surefire.plugin.version>3.2.5</maven.surefire.plugin.version>
@@ -235,7 +235,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>${jackson.version}</version>
+            <version>2.21</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -286,7 +286,7 @@
         <dependency>
             <groupId>org.wiremock</groupId>
             <artifactId>wiremock</artifactId>
-            <version>3.13.2</version>
+            <version>4.0.0-beta.29</version>
             <scope>test</scope>
         </dependency>
         <dependency>
